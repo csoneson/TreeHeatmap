@@ -77,6 +77,7 @@ This creates a heatmap from a matrix
 }
 \examples{
 
+library(dplyr)
 # matrix
 set.seed(2020-05-04)
 dd <- matrix(rnorm(20), ncol=5)

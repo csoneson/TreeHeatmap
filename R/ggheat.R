@@ -39,12 +39,14 @@
 #' @return heatmap
 #' @examples
 #'
+#' library(dplyr)
 #' # matrix
 #' set.seed(2020-05-04)
 #' dd <- matrix(rnorm(20), ncol=5)
 #' rownames(dd) <- paste0('r', 1:4)
 #' colnames(dd) <- paste0('c', 1:5)
-#' ggheat(data = dd)
+#' (gh <- ggheat(data = dd))
+#'
 
 
 ggheat <- function(data,
@@ -147,6 +149,23 @@ ggheat <- function(data,
         }
 
     }
+
+
+    # anchor data
+    hm$row_anchor <- data_long %>%
+        select(rowLab, x, y, h) %>%
+        distinct() %>%
+        mutate(minY = min(y, na.rm = TRUE),
+               maxY = max(y, na.rm = TRUE),
+               label = rowLab)
+
+    hm$col_anchor <- data_long %>%
+        select(colLab, x, w) %>%
+        distinct() %>%
+        mutate(minX = min(x, na.rm = TRUE),
+               maxX = max(x, na.rm = TRUE),
+               label = colLab)
+
     hm
 
 }
