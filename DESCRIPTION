@@ -9,4 +9,4 @@ Description: This package allows users to customize heatmap with annotations
 License: Artistic-2.0
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.0.0
+RoxygenNote: 7.1.0

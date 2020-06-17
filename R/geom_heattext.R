@@ -1,3 +1,5 @@
+#' @import ggplot2
+#' @export
 StatHeatText <- ggproto("StatHeatText", Stat,
                        setup_data = function(data, params) {
                            if (is.null(data$subset)) {
@@ -13,7 +15,16 @@ StatHeatText <- ggproto("StatHeatText", Stat,
                        required_aes = c("x", "y")
 )
 
-
+#' add row or column labels
+#' @param name the name of the current heatmap
+#' @param geom "label" or "text"
+#' @param subset a logical vector to specify rows or columns to add labels
+#' @inheritParams ggplot2::layer
+#' @inheritParams ggplot2::geom_text
+#' @import ggplot2
+#' @export
+#' @return geom layer
+#' @author Ruizhu Huang
 geom_heattext <- function(mapping = NULL,
                          data = NULL,
                          geom = GeomText,
@@ -43,7 +54,12 @@ geom_heattext <- function(mapping = NULL,
     new_layer
 }
 
-
+##' @method ggplot_add heatText
+##' @import ggplot2
+##' @importFrom methods is
+##' @importFrom utils modifyList
+##' @importFrom dplyr '%>%' distinct select
+##' @export
 ggplot_add.heatText <- function(object, plot, object_name) {
 
 
@@ -57,6 +73,10 @@ ggplot_add.heatText <- function(object, plot, object_name) {
     current <- object$stat_params$name
     if (is.null(current)) {
         current <- length(plot$row_anchor)
+    } else {
+        if (!current %in% names(plot$row_anchor)) {
+            stop(current, " can't be found")
+        }
     }
 
     # side: left / right; top/bottom
@@ -64,20 +84,24 @@ ggplot_add.heatText <- function(object, plot, object_name) {
     if (side %in% c("left", "right")) {
         df <- plot$row_anchor[[current]]
         if (side == "left") {
-            df$x <- df$minX - 0.6*df$w
+            df$x <- df$minX - min(0.5*df$w)
         } else {
-            df$x <- df$maxX + 0.6*df$w
+            df$x <- df$maxX + min(0.5*df$w)
         }
     } else {
         df <- plot$col_anchor[[current]]
         if (side == "top") {
-            df$y <- df$maxY + 0.6*df$h
+            df$y <- df$maxY + min(0.5*df$h)
         } else {
-            df$y <- df$minY - 0.6*df$h
+            df$y <- df$minY - min(0.5*df$h)
         }
     }
 
-    object$data <- df
+    # layer data
+    object$data <- df %>%
+        select(x, y, label) %>%
+        distinct()
+
     self_mapping <- aes(x = x, y = y, label = label)
     if (is.null(object$mapping)) {
         object$mapping <- self_mapping

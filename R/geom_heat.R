@@ -1,6 +1,6 @@
-#' @rdname ggplot2-ggproto
 #' @format NULL
 #' @usage NULL
+#' @import ggplot2
 #' @export
 StatHeat <- ggproto("StatHeat", Stat,
                      compute_group = function(data, scales, gap, name) {
@@ -10,13 +10,14 @@ StatHeat <- ggproto("StatHeat", Stat,
                      required_aes = c("x", "y")
 )
 
+#' Create heatmaps
 #' @param name the name of the current heatmap
 #' @param gap a numeric value to specify the gap between the current and the
 #'   previous heatmap
-#' @inheritParams layer
-#' @inheritParams geom_tile
+#' @inheritParams ggplot2::layer
+#' @inheritParams ggplot2::geom_tile
+#' @importFrom ggplot2 layer
 #' @export
-#' @rdname geom_heat
 #' @return geom layer
 #' @author Ruizhu Huang
 geom_heat <- function(mapping = NULL,
@@ -47,6 +48,20 @@ ggplot_add.ggHeat <- function(object, plot, object_name) {
     if (length(plot$col_anchor) != length(plot$row_anchor)) {
         stop("The anchor data has different lengths...")
     }
+
+    # if plot is ggtree, align heatmap to the tree
+    if (is(plot, "ggtree")) {
+        plot$data$x <- plot$data$x - max(plot$data$x, na.rm = TRUE)
+        main_data <- plot$data %>%
+            select(node, y)
+        object$data <- object$data %>%
+            select(-y) %>%
+            mutate(node = unname(transNode(tree = ape::as.phylo(plot),
+                                    node = rowLab)),
+                   x = x) %>%
+            left_join(main_data)
+    }
+
     # about ggheat layer
     previous <- length(plot$col_anchor)
     current <- object$stat_params$name
@@ -94,20 +109,36 @@ ggplot_add.ggHeat <- function(object, plot, object_name) {
 
 
 
-main <- ggplot() +
-    geom_heat(data = dd %>% heatdf(),
-              aes(x = x , y = y, width = w, height = h, fill = value),
-              name = "hm1", gap = 5) +
-    geom_heat(data = dd %>% heatdf(),
-              aes(x = x , y = y, width = w, height = h, fill = value),
-              gap = 2, name = "hm2") +
-    geom_heat(data = dd %>% heatdf(),
-              aes(x = x , y = y, width = w, height = h, fill = value),
-              gap = 2, name = "hm3")
+suppressPackageStartupMessages({
+    library(dplyr)
+    library(ggtree)
+    library(ggplot2)
+    library(tidyr)
+    library(patchwork)
+})
 
-main
-main$col_anchor
-main$row_anchor
+
+
+# set.seed(2020-05-04)
+# dd <- matrix(rnorm(30), ncol=5)
+# rownames(dd) <- paste0('r', 1:6)
+# colnames(dd) <- paste0('c', 1:5)
+#
+#
+# main <- ggplot() +
+#     geom_heat(data = dd %>% heatdf(),
+#               aes(x = x , y = y, width = w, height = h, fill = value),
+#               gap = 5, name = "hm1") +
+#     geom_heat(data = dd %>% heatdf(),
+#               aes(x = x , y = y, width = w, height = h, fill = value),
+#               gap = 2, name = "hm2") +
+#     geom_heat(data = dd %>% heatdf(),
+#               aes(x = x , y = y, width = w, height = h, fill = value),
+#               gap = 2, name = "hm3")
+#
+# main
+# main$col_anchor
+# main$row_anchor
 
 
 # main
