@@ -1,18 +1,6 @@
-
-#' convert data
-#' @param data a matrix
-#' @param fig_rowtree a gg object created by \code{\link[ggtree]{ggtree}} on row tree
-#' @param fig_coltree a gg object created by \code{\link[ggtree]{ggtree}} on column tree
-#' @param w a numeric value to specify column width.
-#' @param h a numeric value to specify row height.
-#' @importFrom ape as.phylo
-#' @importFrom dplyr '%>%' mutate
-#' @importFrom tidyr gather
-#' @export
-#' @return a data frame
-
 heatdf <- function(data,
                    fig_rowtree = NULL,
+                   fig_coltree = NULL,
                    split_col = NULL,
                    w = 1, h = 1){
     rn <- rownames(data)
@@ -34,7 +22,7 @@ heatdf <- function(data,
         # y is from row_data
         # height is based from row_data
         desd_row <- findOS(tree = row_tree, node = data_wide$rowLab,
-                            only.leaf = FALSE, self.include = TRUE)
+                           only.leaf = FALSE, self.include = TRUE)
         y_row <- lapply(desd_row, FUN = function(x){
             xx <- match(x, row_data$node)
             y <- row_data$y[xx]
@@ -81,7 +69,7 @@ heatdf <- function(data,
         # width is based from col_data
         colLab <- colnames(data)
         desd_col <- findOS(tree = col_tree, node = colLab,
-                            only.leaf = FALSE, self.include = TRUE)
+                           only.leaf = FALSE, self.include = TRUE)
         x_col <- lapply(desd_col, FUN = function(x){
             xx <- match(x, col_data$node)
             y <- col_data$y[xx]
