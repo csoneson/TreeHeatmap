@@ -12,7 +12,8 @@ StatHeatText <- ggproto("StatHeatText", Stat,
                                                 subset = NULL) {
                            data
                        },
-                       required_aes = c("x", "y")
+                       required_aes = c("x", "y"),
+                       optional_aes = c("subset")
 )
 
 #' add row or column labels
@@ -114,33 +115,35 @@ ggplot_add.heatText <- function(object, plot, object_name) {
 
 
 
-# set.seed(2020-05-11)
-# library(dplyr)
-# # matrix
-# set.seed(2020-05-04)
-# dd <- matrix(rnorm(20), ncol=5)
-# rownames(dd) <- paste0('r', 1:4)
-# colnames(dd) <- paste0('c', 1:5)
-#
-#
-# main <- ggplot() +
-#     geom_heat(data = dd %>% heatdf(),
-#               aes(x = x , y = y, width = w, height = h, fill = value),
-#               name = "hm1", gap = 5) +
-#     geom_heat(data = dd %>% heatdf(),
-#               aes(x = x , y = y, width = w, height = h, fill = value),
-#               gap = 2, name = "hm2") +
-#     geom_heat(data = dd %>% heatdf(),
-#               aes(x = x , y = y, width = w, height = h, fill = value),
-#               gap = 2, name = "hm3")
-# main +
-#     geom_heattext(aes(color = label),
-#                   geom = "label", name = "hm2", nudge_x = -0.5,
-#                   size = 4, side = "left",
-#                  label.r = unit(0.5, "lines")) +
-#     geom_heattext(aes(subset = (label %in% c("c1", "c2"))),
-#                       geom = "text", name = "hm3",
-#                  color = "red", size = 4, side = "top") +
-#     theme_void()
+set.seed(2020-05-11)
+library(dplyr)
+# matrix
+set.seed(2020-05-04)
+dd <- matrix(rnorm(20), ncol=5)
+rownames(dd) <- paste0('r', 1:4)
+colnames(dd) <- paste0('c', 1:5)
 
+
+main <- ggplot() +
+    geom_heat(data = dd %>% heatdf(),
+              aes(x = x , y = y, width = w, height = h, fill = value),
+              name = "hm1", gap = 5) +
+    geom_heat(data = dd %>% heatdf(),
+              aes(x = x , y = y, width = w, height = h, fill = value),
+              gap = 2, name = "hm2") +
+    geom_heat(data = dd %>% heatdf(),
+              aes(x = x , y = y, width = w, height = h, fill = value),
+              gap = 2, name = "hm3")
+main2 <- main +
+    geom_heattext(aes(color = label),
+                  geom = "label", name = "hm2", nudge_x = -0.5,
+                  size = 4, side = "left",
+                 label.r = unit(0.5, "lines")) +
+    geom_heattext(aes(subset = (label %in% c("c1", "c2")), color = label),
+                      geom = "point", name = "hm3",
+                 size = 4, side = "top",
+                 nudge_y = 0.3) +
+    theme_void()
+
+layer_data(main2, 4)
 
