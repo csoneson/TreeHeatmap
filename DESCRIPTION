@@ -5,8 +5,18 @@ Version: 0.1.0
 Author: Ruizhu Huang
 Maintainer: Ruizhu Huang <ruizhuRH@gmail.com>
 Description: This package allows users to customize heatmap with annotations 
-  using ggplot2 syntax
+  using ggplot2 syntax.
+Dependends:
+    R (>= 3.4.0)
+Imports:
+    ggplot2,
+    ggtree,
+    ape,
+    dplyr,
+    data.table,
+    rlang,
+    methods
 License: Artistic-2.0
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 7.1.0
+RoxygenNote: 7.1.1

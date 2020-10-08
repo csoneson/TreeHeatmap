@@ -1,3 +1,4 @@
+#' StatHeatText
 #' @import ggplot2
 #' @export
 StatHeatText <- ggproto("StatHeatText", Stat,
@@ -9,7 +10,8 @@ StatHeatText <- ggproto("StatHeatText", Stat,
                        },
                        compute_group = function(data, scales,
                                                 name, side,
-                                                subset = NULL) {
+                                                subset = NULL,
+                                                th_data) {
                            data
                        },
                        required_aes = c("x", "y"),
@@ -17,50 +19,57 @@ StatHeatText <- ggproto("StatHeatText", Stat,
 )
 
 #' add row or column labels
-#' @param name the name of the current heatmap
-#' @param geom "label" or "text"
+#' @param th_data a data frame. It should include at least one column
+#'   \code{label} that stores the row/column names of the heatmap.
+#' @param name the name of the heatmap to add row or column labels.
+#' @param side a character value selected from \strong{left}, \strong{right},
+#'   \strong{top} or \strong{bottom}. \strong{left} and \strong{right} to
+#'   annotate row names; \strong{top} or \strong{bottom} to annotate column
+#'   names.
 #' @param subset a logical vector to specify rows or columns to add labels
 #' @inheritParams ggplot2::layer
 #' @inheritParams ggplot2::geom_text
 #' @import ggplot2
+#' @importFrom dplyr left_join
 #' @export
 #' @return geom layer
 #' @author Ruizhu Huang
-geom_heattext <- function(mapping = NULL,
+geom_th_text <- function(mapping = NULL,
+                         th_data = NULL,
                          data = NULL,
-                         geom = GeomText,
                          name = NULL,
                          subset = NULL,
                          side = "left",
-                         ...,
                          nudge_x = 0,
                          nudge_y = 0,
                          na.rm = FALSE,
                          show.legend = NA,
-                         inherit.aes = TRUE) {
+                         inherit.aes = TRUE,
+                         ...) {
     side <- match.arg(side, c("left", "right", "top", "bottom"))
 
     position <- position_nudge(nudge_x, nudge_y)
 
     new_layer <- layer(
-        mapping = mapping, data = data,  geom = geom,
+        mapping = mapping, data = data,  geom = "text",
         stat = StatHeatText, position = position,
         show.legend = show.legend,
         inherit.aes = inherit.aes,
         params = list(na.rm = na.rm, name = name,
                       subset = subset, side = side,
-                      ...)
+                      th_data = th_data, ...)
     )
     class(new_layer) <- c("heatText", class(new_layer))
     new_layer
 }
 
-##' @method ggplot_add heatText
-##' @import ggplot2
-##' @importFrom methods is
-##' @importFrom utils modifyList
-##' @importFrom dplyr '%>%' distinct select
-##' @export
+#' @method ggplot_add heatText
+#' @import ggplot2
+#' @importFrom methods is
+#' @importFrom utils modifyList
+#' @importFrom dplyr '%>%' distinct select
+#' @export
+
 ggplot_add.heatText <- function(object, plot, object_name) {
 
 
@@ -82,28 +91,38 @@ ggplot_add.heatText <- function(object, plot, object_name) {
 
     # side: left / right; top/bottom
     side <- object$stat_params$side
+    th_data <- object$stat_params$th_data
+
+    # default mapping & data
     if (side %in% c("left", "right")) {
-        df <- plot$row_anchor[[current]]
-        if (side == "left") {
-            df$x <- df$minX - min(0.5*df$w)
+        if (!is.null(th_data)) {
+            object$data <- plot$row_anchor[[current]] %>%
+                left_join(th_data, by = "label")
         } else {
-            df$x <- df$maxX + min(0.5*df$w)
+            object$data <- plot$row_anchor[[current]]
+        }
+
+
+        if (side == "left") {
+            self_mapping <- aes_string(x = "minX", y = "y", label = "label")
+        } else {
+            self_mapping <- aes_string(x = "maxX", y = "y", label = "label")
         }
     } else {
-        df <- plot$col_anchor[[current]]
-        if (side == "top") {
-            df$y <- df$maxY + min(0.5*df$h)
+        if (!is.null(th_data)) {
+        object$data <- plot$col_anchor[[current]] %>%
+            left_join(th_data, by = "label")
         } else {
-            df$y <- df$minY - min(0.5*df$h)
+            object$data <- plot$col_anchor[[current]]
+        }
+
+        if (side == "top") {
+            self_mapping <- aes_string(x = "x", y = "maxY", label = "label")
+        } else {
+            self_mapping <- aes_string(x = "x", y = "minY", label = "label")
         }
     }
 
-    # layer data
-    object$data <- df %>%
-        select(x, y, label) %>%
-        distinct()
-
-    self_mapping <- aes(x = x, y = y, label = label)
     if (is.null(object$mapping)) {
         object$mapping <- self_mapping
     } else {
@@ -113,37 +132,4 @@ ggplot_add.heatText <- function(object, plot, object_name) {
     NextMethod()
 }
 
-
-
-set.seed(2020-05-11)
-library(dplyr)
-# matrix
-set.seed(2020-05-04)
-dd <- matrix(rnorm(20), ncol=5)
-rownames(dd) <- paste0('r', 1:4)
-colnames(dd) <- paste0('c', 1:5)
-
-
-main <- ggplot() +
-    geom_heat(data = dd %>% heatdf(),
-              aes(x = x , y = y, width = w, height = h, fill = value),
-              name = "hm1", gap = 5) +
-    geom_heat(data = dd %>% heatdf(),
-              aes(x = x , y = y, width = w, height = h, fill = value),
-              gap = 2, name = "hm2") +
-    geom_heat(data = dd %>% heatdf(),
-              aes(x = x , y = y, width = w, height = h, fill = value),
-              gap = 2, name = "hm3")
-main2 <- main +
-    geom_heattext(aes(color = label),
-                  geom = "label", name = "hm2", nudge_x = -0.5,
-                  size = 4, side = "left",
-                 label.r = unit(0.5, "lines")) +
-    geom_heattext(aes(subset = (label %in% c("c1", "c2")), color = label),
-                      geom = "point", name = "hm3",
-                 size = 4, side = "top",
-                 nudge_y = 0.3) +
-    theme_void()
-
-layer_data(main2, 4)
 
