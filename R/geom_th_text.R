@@ -1,22 +1,3 @@
-#' StatHeatText
-#' @import ggplot2
-#' @export
-StatHeatText <- ggproto("StatHeatText", Stat,
-                       setup_data = function(data, params) {
-                           if (is.null(data$subset)) {
-                               return(data)
-                           }
-                           data[which(data$subset), , drop = FALSE]
-                       },
-                       compute_group = function(data, scales,
-                                                name, side,
-                                                subset = NULL,
-                                                th_data) {
-                           data
-                       },
-                       required_aes = c("x", "y"),
-                       optional_aes = c("subset")
-)
 
 #' add row or column labels
 #' @param th_data a data frame. It should include at least one column
@@ -27,7 +8,8 @@ StatHeatText <- ggproto("StatHeatText", Stat,
 #'   annotate row names; \strong{top} or \strong{bottom} to annotate column
 #'   names.
 #' @param subset a logical vector to specify rows or columns to add labels
-#' @inheritParams ggplot2::layer
+#' @param nudge_x a value to shift the text horizontally.
+#' @param nudge_y a value to shift the text vertically.
 #' @inheritParams ggplot2::geom_text
 #' @import ggplot2
 #' @importFrom dplyr left_join
@@ -46,31 +28,28 @@ geom_th_text <- function(mapping = NULL,
                          show.legend = NA,
                          inherit.aes = TRUE,
                          ...) {
-    side <- match.arg(side, c("left", "right", "top", "bottom"))
 
-    position <- position_nudge(nudge_x, nudge_y)
+    .annotate_layer(mapping = mapping, th_data = th_data,
+                    data = data, name = name,
+                    subset = subset, side = side,
+                    nudge_x = nudge_x, nudge_y = nudge_y,
+                    extend_x = c(0, 0), extend_y = c(0, 0),
+                    na.rm = na.rm, show.legend = show.legend,
+                    inherit.aes = inherit.aes,
+                    geom = "text", stat = StatTH,
+                    new_class = "ggTHtext",
+                    ...)
 
-    new_layer <- layer(
-        mapping = mapping, data = data,  geom = "text",
-        stat = StatHeatText, position = position,
-        show.legend = show.legend,
-        inherit.aes = inherit.aes,
-        params = list(na.rm = na.rm, name = name,
-                      subset = subset, side = side,
-                      th_data = th_data, ...)
-    )
-    class(new_layer) <- c("heatText", class(new_layer))
-    new_layer
 }
 
-#' @method ggplot_add heatText
+#' @method ggplot_add ggTHtext
 #' @import ggplot2
 #' @importFrom methods is
 #' @importFrom utils modifyList
 #' @importFrom dplyr '%>%' distinct select
 #' @export
 
-ggplot_add.heatText <- function(object, plot, object_name) {
+ggplot_add.ggTHtext <- function(object, plot, object_name) {
 
 
     if (!length(plot$row_anchor)) {
