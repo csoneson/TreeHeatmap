@@ -19,10 +19,6 @@
 .align_to_ggtree <- function(data, data_tree, rel_width = 1) {
 
     # the wide form of data
-    # data_wide <- data %>%
-    #     data.frame(check.names = FALSE) %>%
-    #     mutate(rowLab = rownames(data))
-
     data_wide <- as.data.table(data, keep.rownames = "rowLab")
 
     ## y, height are generated from data_tree
@@ -64,7 +60,8 @@
                       measure.vars = colnames(data),
                       variable.name = "colLab") %>%
         mutate(x = (as.numeric(factor(.data$colLab,
-                                      levels = colnames(data)))-1)*w,
+                                      levels = colnames(data)))-1)*w +
+                   0.5*w,
                w = w)
      return(data_long)
 }
