@@ -1,9 +1,9 @@
-#' StatHeatmp
+#' StatTHtile
 #' @format NULL
 #' @usage NULL
 #' @import ggplot2
 #' @export
-StatHeatmp <- ggproto("StatHeatmp", Stat,
+StatTHtile <- ggproto("StatTHtile", Stat,
                       compute_group = function(data, th_data, scales,
                                                gap, name, rel_width,
                                                cluster_column,
@@ -20,10 +20,12 @@ StatHeatmp <- ggproto("StatHeatmp", Stat,
 #' @param th_data a matrix
 #' @param cluster_column a logical value, TRUE or FALSE. If TRUE, columns of the
 #'   heatmap are rearranged according to their similarities.
-#' @param hclust_method the method used to do clustering. See \code{method} for
-#'   \code{\link[stats]{hclust}}.
-#' @param dist_method the method used to do clustering. See \code{method} for
-#'   \code{\link[stats]{dist}}.
+#' @param hclust_method the method used to do clustering. This should be
+#'   "ward.D", "ward.D2", "single", "complete", "average", "mcquitty", "median"
+#'   or "centroid". See \code{method} for \code{\link[stats]{hclust}}.
+#' @param dist_method the method used to do clustering. This must be one of
+#'   "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski".
+#'   See \code{method} for \code{\link[stats]{dist}}.
 #' @param gap a numeric value to specify the gap between the current and the
 #'   previous heatmap
 #' @param rel_width a numeric value decide the relative width of the heatmap
@@ -50,7 +52,7 @@ geom_th_heatmp <- function(mapping = NULL,
                            show.legend = NA,
                            inherit.aes = TRUE) {
     new_layer <- layer(
-        stat = StatHeatmp, data = data, mapping = mapping, geom = "tile",
+        stat = StatTHtile, data = data, mapping = mapping, geom = "tile",
         position = position, show.legend = show.legend, inherit.aes = inherit.aes,
         params = list(na.rm = na.rm, gap = gap, name = name,
                       th_data = th_data, rel_width = rel_width,
@@ -58,19 +60,20 @@ geom_th_heatmp <- function(mapping = NULL,
                       hclust_method = hclust_method,
                       dist_method = dist_method, ...)
     )
-    class(new_layer) <- c("ggHeatmp", class(new_layer))
+    class(new_layer) <- c("ggTHtile", class(new_layer))
     new_layer
 }
 
-#' @method ggplot_add ggHeatmp
+#' @method ggplot_add ggTHtile
 #' @importFrom dplyr mutate select distinct '%>%'
 #' @importFrom methods is
 #' @importFrom rlang .data
 #' @importFrom utils modifyList
 #' @importFrom stats dist hclust
+#' @importFrom ggdendro dendro_data
 #' @import ggplot2
 #' @export
-ggplot_add.ggHeatmp <- function(object, plot, object_name) {
+ggplot_add.ggTHtile <- function(object, plot, object_name) {
     if (length(plot$col_anchor) != length(plot$row_anchor)) {
         stop("The anchor data has different lengths...")
     }
@@ -92,7 +95,7 @@ ggplot_add.ggHeatmp <- function(object, plot, object_name) {
     # if the anchor data doesn't exist, start slots to store the anchor data
     # tmpX: the upper x of the previous 'geom_th_heatmp'
     if (!previous) {
-        plot$col_anchor <- plot$row_anchor <- list()
+        plot$col_anchor <- plot$row_anchor <- plot$col_tree <- list()
         tmpX <- max(main_data$x, na.rm = TRUE)
     } else {
         tmpX <- unique(plot$row_anchor[[previous]]$maxX)
@@ -105,20 +108,21 @@ ggplot_add.ggHeatmp <- function(object, plot, object_name) {
         hclust_method <- object$stat_params$hclust_method
         dist_method <- object$stat_params$dist_method
         th_data <- object$stat_params$th_data
-
+        rel_width <- object$stat_params$rel_width
         if (cluster_column) {
-            dd <- dist(t(th_data))
-            xx <- hclust(dd, hclust_method)
-            th_data <- th_data[, colnames(th_data)[xx$order]]
+            dd <- dist(t(th_data), method = dist_method)
+            tree_col <- hclust(dd, method = hclust_method)
+            dendr <- dendro_data(tree_col, type="rectangle")
+            th_data <- th_data[, colnames(th_data)[tree_col$order]]
         }
         object$data <- th_data %>%
             .align_to_ggtree(data_tree = main_data,
-                             rel_width = object$stat_params$rel_width)
-
+                             rel_width = rel_width)
         # the layer data starts x from tmpX
         object$data$x <- object$data$x + tmpX
     }
 
+    ## store the anchor data
     # the gap to the previous 'geom_th_heatmp'
     gap <- object$stat_params$gap
     plot$row_anchor[[current]] <- object$data %>%
@@ -135,6 +139,21 @@ ggplot_add.ggHeatmp <- function(object, plot, object_name) {
                x = .data$x + gap) %>%
         select(.data$label, .data$x, .data$minY, .data$maxY, .data$w) %>%
         distinct()
+
+    ## store the column tree data
+    if (cluster_column) {
+        # adapt the tree position
+        ww <- unique(object$data$w, na.rm = TRUE)
+        min_xx <- min(object$data$x, na.rm = TRUE)
+        df_tree <- dendr$segments %>%
+            left_join(dendr$labels,
+                      by = c("xend" = "x", "yend" = "y")) %>%
+            mutate(x = ww * (.data$x-1) + min_xx + gap,
+                   xend = ww * (.data$xend-1) + min_xx + gap)
+    } else {
+         df_tree <- NULL
+     }
+    plot$col_tree[[current]] <- df_tree
 
     # mapping
     self_mapping <- aes_string(x = "x", y = "y", width = "w",
