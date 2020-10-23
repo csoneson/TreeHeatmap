@@ -15,16 +15,15 @@ aa <- cbind(rmultinom(n = 4, size = 50, prob = p1),
 colnames(aa) <- paste("S", 1:8, sep = "")
 rownames(aa) <- tinyTree$tip.label
 
-# a new count matrix: aggregate some rows
-bb <- rbind(colSums(aa[1:3, ]),
-            aa[4:7, ],
-            colSums(aa[8:9, ]),
-            aa[10, ])
-rownames(bb) <- c("N14", paste0("N", 4:7), "N19", "N10")
+# # a new count matrix: aggregate some rows
+# bb <- rbind(colSums(aa[1:3, ]),
+#             aa[4:7, ],
+#             colSums(aa[8:9, ]),
+#             aa[10, ])
+# rownames(bb) <- c("N14", paste0("N", 4:7), "N19", "N10")
 
 toydata <- list(toytree = tinyTree,
-                countA = aa,
-                countB = bb)
+                count = aa)
 
 
 usethis::use_data(toydata, overwrite = TRUE)

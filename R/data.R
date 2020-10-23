@@ -22,17 +22,16 @@
 
 #' The toy data
 #'
-#' It contains a toy tree, and two count matrices. The data is generated
+#' It contains a toy tree, and a count matrix. The data is generated
 #' randomly with the R script \code{toydata.R} in the \code{data-raw} folder of
-#' this package. The toy tree has 10 leaves. Each count matrix has 8 columns
-#' representing 8 samples. Each row of the count matrix corresponds to a node of
+#' this package. The toy tree has 10 leaves. The count matrix has 8 columns
+#' representing 8 samples and 10 row corresponding to 10 leaves of
 #' the tree.
 #'
 #' @format A list of datasets:
 #' \describe{
 #'   \item{toytree}{A tree with 10 leaves and 9 internal nodes.}
 #'   \item{countA}{A matrix has 10 rows and 8 columns}
-#'   \item{countB}{A matrix has 7 rows and 8 columns}
 #' }
 #'
 #' @source The data is generated
