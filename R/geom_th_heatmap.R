@@ -36,7 +36,7 @@ StatTHtile <- ggproto("StatTHtile", Stat,
 #' @export
 #' @return geom layer
 #' @author Ruizhu Huang
-geom_th_heatmp <- function(mapping = NULL,
+geom_th_heatmap <- function(mapping = NULL,
                            th_data = NULL,
                            cluster_column = FALSE,
                            hclust_method = "complete",
@@ -80,25 +80,26 @@ ggplot_add.ggTHtile <- function(object, plot, object_name) {
 
     # the global data
     main_data <- plot$data
-
     if(is(main_data, "waiver")) {
         stop("ggtree can't be found.")
     }
 
     # the previous & current treeheatmap
-    previous <- length(plot$col_anchor)
+    previous <- length(plot$heatmap)
     current <- object$stat_params$name
     if (is.null(current)) {
         current <- previous + 1
     }
 
     # if the anchor data doesn't exist, start slots to store the anchor data
-    # tmpX: the upper x of the previous 'geom_th_heatmp'
+    # tmpX: the upper x of the previous 'geom_th_heatmap'
     if (!previous) {
-        plot$col_anchor <- plot$row_anchor <- plot$col_tree <- list()
+        plot$heatmap <- list()
+        # plot$heatmap$col_anchor <- plot$heatmap$row_anchor  <- list()
         tmpX <- max(main_data$x, na.rm = TRUE)
     } else {
-        tmpX <- unique(plot$row_anchor[[previous]]$maxX)
+        tmpX <- unique(plot$heatmap[[previous]]$row_anchor$maxX)
+        #tmpX <- unique(plot$row_anchor[[previous]]$maxX)
     }
 
     # if the data of 'geom_th_heatmp' not available, generate it from th_data
@@ -122,22 +123,29 @@ ggplot_add.ggTHtile <- function(object, plot, object_name) {
         object$data$x <- object$data$x + tmpX
     }
 
-    ## store the anchor data
     # the gap to the previous 'geom_th_heatmp'
     gap <- object$stat_params$gap
-    plot$row_anchor[[current]] <- object$data %>%
+
+    # store the heatmap data
+    plot$heatmap[[current]]$data <- object$data %>%
+        mutate(x = .data$x + gap)
+
+    ## store the anchor data
+    # plot$row_anchor[[current]] <- object$data %>%
+    plot$heatmap[[current]]$row_anchor <- object$data %>%
         mutate(minX = min(.data$x - 0.5*.data$w, na.rm = TRUE) + gap,
                maxX = max(.data$x + 0.5*.data$w, na.rm = TRUE) + gap,
-               label = .data$rowLab) %>%
-        select(.data$label, .data$y, .data$minX, .data$maxX, .data$h) %>%
+               rowLab = .data$rowLab) %>%
+        select(.data$rowLab, .data$y, .data$minX, .data$maxX, .data$h) %>%
         distinct()
 
-    plot$col_anchor[[current]] <- object$data %>%
+    # plot$col_anchor[[current]] <- object$data %>%
+    plot$heatmap[[current]]$col_anchor <- object$data %>%
         mutate(minY = min(.data$y - 0.5*.data$h, na.rm = TRUE),
                maxY = max(.data$y + 0.5*.data$h, na.rm = TRUE),
-               label = .data$colLab,
+               colLab = .data$colLab,
                x = .data$x + gap) %>%
-        select(.data$label, .data$x, .data$minY, .data$maxY, .data$w) %>%
+        select(.data$colLab, .data$x, .data$minY, .data$maxY, .data$w) %>%
         distinct()
 
     ## store the column tree data
@@ -153,7 +161,8 @@ ggplot_add.ggTHtile <- function(object, plot, object_name) {
     } else {
          df_tree <- NULL
      }
-    plot$col_tree[[current]] <- df_tree
+    # plot$col_tree[[current]] <- df_tree
+    plot$heatmap[[current]]$col_tree <- df_tree
 
     # mapping
     self_mapping <- aes_string(x = "x", y = "y", width = "w",
