@@ -7,7 +7,7 @@
 geom_th_coltree(
   mapping = NULL,
   data = NULL,
-  gap = 1,
+  gap = 0.5,
   name = NULL,
   rel_height = 0.1,
   ...

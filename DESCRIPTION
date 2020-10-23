@@ -24,6 +24,7 @@ LazyData: true
 RoxygenNote: 7.1.1
 Suggests: 
     knitr,
+    BiocStyle,
     rmarkdown
 VignetteBuilder: knitr
 Depends: 
