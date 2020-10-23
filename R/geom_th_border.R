@@ -31,16 +31,23 @@ geom_th_borderline <- function(mapping = NULL,
                            inherit.aes = TRUE,
                            ...) {
 
-    .annotate_layer(mapping = mapping, th_data = NULL,
-                    data = NULL, name = name,
-                    subset = NULL, side = side,
-                    nudge_x = nudge_x, nudge_y = nudge_y,
-                    extend_x = extend_x, extend_y = extend_y,
-                    na.rm = na.rm, show.legend = show.legend,
-                    inherit.aes = inherit.aes,
-                    geom = "segment", stat = StatTH,
-                    new_class = "ggTHborder",
-                    ...)
+    side <- match.arg(side, c("left", "right", "top", "bottom"))
+
+    position <- position_nudge(nudge_x, nudge_y)
+    StatTH <- allow_subset_stat("StatTH", Stat)
+    new_layer <- layer(
+        mapping = mapping, data = NULL, geom = "segment",
+        stat = StatTH, position = position,
+        show.legend = show.legend,
+        inherit.aes = inherit.aes,
+        params = list(na.rm = na.rm, subset = subset, ...)
+    )
+
+    th_params <- list(name = name, side = side,
+                     extend_x = extend_x,
+                     extend_y = extend_y)
+
+    ggproto("ggTHborder", new_layer, th_params = th_params)
 
 }
 
@@ -54,31 +61,17 @@ geom_th_borderline <- function(mapping = NULL,
 
 ggplot_add.ggTHborder <- function(object, plot, object_name) {
 
-
-    if (!length(plot$row_anchor)) {
-        stop("row anchor data is missing ...")
-    }
-    if (!length(plot$col_anchor)) {
-        stop("column anchor data is missing ...")
-    }
     # the active layer of ggheat
-    current <- object$stat_params$name
-    if (is.null(current)) {
-        current <- length(plot$row_anchor)
-    } else {
-        if (!current %in% names(plot$row_anchor)) {
-            stop(current, " can't be found")
-        }
-    }
+    current <- .current_heatmap(plot = plot, object = object)
 
     # side: left / right; top/bottom
-    side <- object$stat_params$side
-    extend_x <- object$stat_params$extend_x
-    extend_y <- object$stat_params$extend_y
+    side <- object$th_params$side
+    extend_x <- object$th_params$extend_x
+    extend_y <- object$th_params$extend_y
 
     # default mapping & data
     if (side %in% c("left", "right")) {
-        df <- plot$row_anchor[[current]]
+        df <- .row_anchor(plot, current)
         object$data <- data.frame(
             minX = unique(df$minX),
             maxX = unique(df$maxX),
@@ -95,7 +88,7 @@ ggplot_add.ggTHborder <- function(object, plot, object_name) {
 
 
     } else {
-        df <- plot$col_anchor[[current]]
+        df <- .col_anchor(plot, current)
         object$data <- data.frame(
             minX = min(df$x - 0.5*df$w) - extend_x[1],
             maxX = max(df$x + 0.5*df$w) + extend_x[2],
@@ -130,10 +123,6 @@ ggplot_add.ggTHborder <- function(object, plot, object_name) {
 #'   line.
 #' @param nudge_x a value to shift the border line horizontally.
 #' @param nudge_y a value to shift the border line vertically.
-#' @param extend_x a numeric vector with two elements. For example, \code{c(1,
-#'   2)} would extend the left end of the line by 1 and the right end by 2.
-#' @param extend_y a numeric vector with two elements. For example, \code{c(1,
-#'   2)} would extend the bottom end of the line by 1 and the top end by 2.
 #' @inheritParams ggplot2::geom_text
 #' @import ggplot2
 #' @importFrom dplyr left_join
@@ -145,23 +134,36 @@ geom_th_bordertext <- function(mapping = NULL,
                                side = "left",
                                nudge_x = 0,
                                nudge_y = 0,
-                               extend_x = c(0, 0),
-                               extend_y = c(0, 0),
                                na.rm = FALSE,
                                show.legend = NA,
                                inherit.aes = TRUE,
                                ...) {
 
-    .annotate_layer(mapping = mapping, th_data = NULL,
-                    data = NULL, name = name,
-                    subset = NULL, side = side,
-                    nudge_x = nudge_x, nudge_y = nudge_y,
-                    extend_x = extend_x, extend_y = extend_y,
-                    na.rm = na.rm, show.legend = show.legend,
-                    inherit.aes = inherit.aes,
-                    geom = "text", stat = StatTH,
-                    new_class = "ggTHbordertext",
-                    ...)
+    side <- match.arg(side, c("left", "right", "top", "bottom"))
+
+    position <- position_nudge(nudge_x, nudge_y)
+    StatTH <- allow_subset_stat("StatTH", Stat)
+    new_layer <- layer(
+        mapping = mapping, data = NULL, geom = "text",
+        stat = StatTH, position = position,
+        show.legend = show.legend,
+        inherit.aes = inherit.aes,
+        params = list(na.rm = na.rm, subset = subset, ...)
+    )
+
+    th_params <- list(name = name, side = side)
+
+    ggproto("ggTHbordertext", new_layer, th_params = th_params)
+    # .annotate_layer(mapping = mapping, th_data = NULL,
+    #                 data = NULL, name = name,
+    #                 subset = NULL, side = side,
+    #                 nudge_x = nudge_x, nudge_y = nudge_y,
+    #                 extend_x = extend_x, extend_y = extend_y,
+    #                 na.rm = na.rm, show.legend = show.legend,
+    #                 inherit.aes = inherit.aes,
+    #                 geom = "text", stat = StatTH,
+    #                 new_class = "ggTHbordertext",
+    #                 ...)
 
 }
 
@@ -175,31 +177,17 @@ geom_th_bordertext <- function(mapping = NULL,
 
 ggplot_add.ggTHbordertext <- function(object, plot, object_name) {
 
-
-    if (!length(plot$row_anchor)) {
-        stop("row anchor data is missing ...")
-    }
-    if (!length(plot$col_anchor)) {
-        stop("column anchor data is missing ...")
-    }
     # the active layer of ggheat
-    current <- object$stat_params$name
-    if (is.null(current)) {
-        current <- length(plot$row_anchor)
-    } else {
-        if (!current %in% names(plot$row_anchor)) {
-            stop(current, " can't be found")
-        }
-    }
+    current <- .current_heatmap(plot = plot, object = object)
 
     # side: left / right; top/bottom
-    side <- object$stat_params$side
-    extend_x <- object$stat_params$extend_x
-    extend_y <- object$stat_params$extend_y
+    side <- object$th_params$side
+    extend_x <- object$th_params$extend_x
+    extend_y <- object$th_params$extend_y
 
     # default mapping & data
     if (side %in% c("left", "right")) {
-        df <- plot$row_anchor[[current]]
+        df <- .row_anchor(plot, current)
         object$data <- data.frame(
             minX = unique(df$minX),
             maxX = unique(df$maxX),
@@ -214,7 +202,7 @@ ggplot_add.ggTHbordertext <- function(object, plot, object_name) {
 
 
     } else {
-        df <- plot$col_anchor[[current]]
+        df <- .col_anchor(plot, current)
         object$data <- data.frame(
             minX = min(df$x - 0.5*df$w) - extend_x[1],
             maxX = max(df$x + 0.5*df$w) + extend_x[2],

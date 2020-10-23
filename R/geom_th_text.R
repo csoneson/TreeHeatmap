@@ -1,7 +1,10 @@
 
 #' add row or column labels
-#' @param th_data a data frame. It should include at least one column
-#'   \code{label} that stores the row/column names of the heatmap.
+#' @param th_data a data frame. It should include one column named as
+#'   \code{rowLab} to store the row name of the heatmap when \code{side} is
+#'   \strong{left} or \strong{right}; otherwise, it should include one column
+#'   named as \code{colLab} to store the column name of the heatmap when
+#'   \code{side} is \strong{top} or \strong{bottom}.
 #' @param name the name of the heatmap to add row or column labels.
 #' @param side a character value selected from \strong{left}, \strong{right},
 #'   \strong{top} or \strong{bottom}. \strong{left} and \strong{right} to
@@ -17,9 +20,8 @@
 #' @return geom layer
 #' @author Ruizhu Huang
 geom_th_text <- function(mapping = NULL,
-                         th_data = NULL,
-                         data = NULL,
                          name = NULL,
+                         th_data = NULL,
                          subset = NULL,
                          side = "left",
                          nudge_x = 0,
@@ -29,19 +31,23 @@ geom_th_text <- function(mapping = NULL,
                          inherit.aes = TRUE,
                          ...) {
 
-    .annotate_layer(mapping = mapping, th_data = th_data,
-                    data = data, name = name,
-                    subset = subset, side = side,
-                    nudge_x = nudge_x, nudge_y = nudge_y,
-                    extend_x = c(0, 0), extend_y = c(0, 0),
-                    na.rm = na.rm, show.legend = show.legend,
-                    inherit.aes = inherit.aes,
-                    geom = "text", stat = StatTH,
-                    new_class = "ggTHtext",
-                    ...)
+    side <- match.arg(side, c("left", "right", "top", "bottom"))
 
+    position <- position_nudge(nudge_x, nudge_y)
+
+    StatTH <- allow_subset_stat("StatTH", Stat)
+    new_layer <- layer(
+        mapping = mapping, data = NULL, geom = "text",
+        stat = StatTH, position = position,
+        show.legend = show.legend,
+        inherit.aes = inherit.aes,
+        params = list(na.rm = na.rm, subset = subset, ...)
+    )
+    th_params <- list(name = name, th_data = th_data,
+                      side = side)
+
+    ggproto("ggTHtext", new_layer, th_params = th_params)
 }
-
 #' @method ggplot_add ggTHtext
 #' @import ggplot2
 #' @importFrom methods is
@@ -51,54 +57,40 @@ geom_th_text <- function(mapping = NULL,
 
 ggplot_add.ggTHtext <- function(object, plot, object_name) {
 
-
-    if (!length(plot$row_anchor)) {
-        stop("row anchor data is missing ...")
-    }
-    if (!length(plot$col_anchor)) {
-        stop("column anchor data is missing ...")
-    }
     # the active layer of ggheat
-    current <- object$stat_params$name
-    if (is.null(current)) {
-        current <- length(plot$row_anchor)
-    } else {
-        if (!current %in% names(plot$row_anchor)) {
-            stop(current, " can't be found")
-        }
-    }
+    current <- .current_heatmap(plot = plot, object = object)
 
     # side: left / right; top/bottom
-    side <- object$stat_params$side
-    th_data <- object$stat_params$th_data
+    side <- object$th_params$side
+    th_data <- object$th_params$th_data
 
     # default mapping & data
     if (side %in% c("left", "right")) {
         if (!is.null(th_data)) {
-            object$data <- plot$row_anchor[[current]] %>%
-                left_join(th_data, by = "label")
+            object$data <- .row_anchor(plot, current) %>%
+                left_join(th_data, by = "rowLab")
         } else {
-            object$data <- plot$row_anchor[[current]]
+            object$data <- .row_anchor(plot, current)
         }
 
 
         if (side == "left") {
-            self_mapping <- aes_string(x = "minX", y = "y", label = "label")
+            self_mapping <- aes_string(x = "minX", y = "y", label = "rowLab")
         } else {
-            self_mapping <- aes_string(x = "maxX", y = "y", label = "label")
+            self_mapping <- aes_string(x = "maxX", y = "y", label = "rowLab")
         }
     } else {
         if (!is.null(th_data)) {
-        object$data <- plot$col_anchor[[current]] %>%
-            left_join(th_data, by = "label")
+            object$data <- .col_anchor(plot, current) %>%
+                left_join(th_data, by = "colLab")
         } else {
-            object$data <- plot$col_anchor[[current]]
+            object$data <- .col_anchor(plot, current)
         }
 
         if (side == "top") {
-            self_mapping <- aes_string(x = "x", y = "maxY", label = "label")
+            self_mapping <- aes_string(x = "x", y = "maxY", label = "colLab")
         } else {
-            self_mapping <- aes_string(x = "x", y = "minY", label = "label")
+            self_mapping <- aes_string(x = "x", y = "minY", label = "colLab")
         }
     }
 
@@ -110,5 +102,3 @@ ggplot_add.ggTHtext <- function(object, plot, object_name) {
 
     NextMethod()
 }
-
-

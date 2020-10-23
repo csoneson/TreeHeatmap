@@ -26,18 +26,22 @@ geom_th_title <- function(mapping = NULL,
                            inherit.aes = TRUE,
                            ...) {
 
+    side <- match.arg(side, c("left", "right", "top", "bottom"))
 
-    .annotate_layer(mapping = mapping, th_data = NULL,
-                    data = NULL, name = name,
-                    subset = NULL, side = side,
-                    nudge_x = nudge_x, nudge_y = nudge_y,
-                    extend_x = c(0, 0), extend_y = c(0, 0),
-                    na.rm = na.rm, show.legend = show.legend,
-                    inherit.aes = inherit.aes,
-                    geom = "text", stat = StatTH,
-                    new_class = "ggTHtitle",
-                    ...)
+    position <- position_nudge(nudge_x, nudge_y)
 
+    StatTH <- allow_subset_stat("StatTH", Stat)
+    new_layer <- layer(
+        mapping = mapping, data = NULL, geom = "text",
+        stat = StatTH, position = position,
+        show.legend = show.legend,
+        inherit.aes = inherit.aes,
+        params = list(na.rm = na.rm, ...)
+    )
+    th_params <- list(name = name, side = side,
+                      nudge_x = nudge_x, nudge_y = nudge_y)
+
+    ggproto("ggTHtitle", new_layer, th_params = th_params)
 }
 
 #' @method ggplot_add ggTHtitle
@@ -48,29 +52,15 @@ geom_th_title <- function(mapping = NULL,
 
 ggplot_add.ggTHtitle <- function(object, plot, object_name) {
 
-
-    if (!length(plot$row_anchor)) {
-        stop("row anchor data is missing ...")
-    }
-    if (!length(plot$col_anchor)) {
-        stop("column anchor data is missing ...")
-    }
     # the active layer of ggheat
-    current <- object$stat_params$name
-    if (is.null(current)) {
-        current <- length(plot$row_anchor)
-    } else {
-        if (!current %in% names(plot$row_anchor)) {
-            stop(current, " can't be found")
-        }
-    }
+    current <- .current_heatmap(plot = plot, object = object)
 
     # side: left / right; top/bottom
-    side <- object$stat_params$side
+    side <- object$th_params$side
 
     # default mapping & data
     if (side %in% c("left", "right")) {
-        df <- plot$row_anchor[[current]]
+        df <- .row_anchor(plot, current)
         object$data <- data.frame(
             minX = unique(df$minX) - 1,
             y = mean(range(df$y, na.rm = TRUE)),
@@ -84,7 +74,7 @@ ggplot_add.ggTHtitle <- function(object, plot, object_name) {
 
 
     } else {
-        df <- plot$col_anchor[[current]]
+        df <- .col_anchor(plot, current)
         object$data <- data.frame(
             x = mean(range(df$x, na.rm = TRUE)),
             minY = unique(df$minY - 1, na.rm = TRUE),
