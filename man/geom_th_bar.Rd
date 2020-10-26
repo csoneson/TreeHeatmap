@@ -11,6 +11,7 @@ geom_th_bar(
   side = "right",
   gap = 1,
   rel_width = 1,
+  rel_height = 1,
   stat = "identity",
   ...
 )

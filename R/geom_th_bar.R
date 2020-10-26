@@ -135,14 +135,16 @@ ggplot_add.ggTHbar <- function(object, plot, object_name) {
             barY <- max(object$data[[ylab]], na.rm = TRUE)
             object$position$y <- minY - gap - barY
 
-            # # axis: df
+            # df_axis
             od <- object$data
             ht <- unique(od$height)
             df <- data.frame(axisV = pretty(od$old, n = 2) ,
-                             axisLX = min(od$x, na.rm = TRUE)- 0.55*unique(od$w),
-                             axisRX = max(od$x, na.rm = TRUE)+ 0.55*unique(od$w)) %>%
+                             axisX = min(od$x, na.rm = TRUE)- 0.55*unique(od$w),
+                             axisXX = max(od$x, na.rm = TRUE)+ 0.55*unique(od$w)) %>%
                 mutate(axisY = .data$axisV * hh/ht* rel_height +
                            object$position$y)
+            plot$heatmap[[current]]$col_tmp$df_axis <- df
+
             } else {
             # position: top
             maxY <- max(.col_anchor(plot, current)$maxY)
