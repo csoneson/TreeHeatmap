@@ -2,20 +2,19 @@
 % Please edit documentation in R/geom_th_border.R
 \name{geom_th_border}
 \alias{geom_th_border}
-\title{add the border line of a heatmap}
+\title{add the border line}
 \usage{
 geom_th_border(
   name,
   side,
-  nudge_x = 0,
-  nudge_y = 0,
+  gap = 0.5,
   extend_y = c(0, 0),
   extend_x = c(0, 0),
-  label = NULL,
   label_color = "black",
   label_size = 4,
   label_offset_x = 0,
   label_offset_y = 0,
+  label = "",
   ...
 )
 }
@@ -27,17 +26,11 @@ geom_th_border(
 the vertical line; \strong{top} or \strong{bottom} to add the horizontal
 line.}
 
-\item{nudge_x}{a value to shift the border line horizontally.}
-
-\item{nudge_y}{a value to shift the border line vertically.}
-
 \item{extend_y}{a numeric vector with two elements. For example, \code{c(1,
 2)} would extend the bottom end of the line by 1 and the top end by 2.}
 
 \item{extend_x}{a numeric vector with two elements. For example, \code{c(1,
 2)} would extend the left end of the line by 1 and the right end by 2.}
-
-\item{label}{a character to label the border line}
 
 \item{label_color}{the color of the label.}
 
@@ -47,10 +40,16 @@ line.}
 
 \item{label_offset_y}{a value to shift the label vertically.}
 
+\item{label}{a character to label the border line}
+
 \item{...}{Other arguments passed on to \code{\link[ggplot2:layer]{layer()}}. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
+
+\item{nudge_x}{a value to shift the border line horizontally.}
+
+\item{nudge_y}{a value to shift the border line vertically.}
 }
 \value{
 geom layer
