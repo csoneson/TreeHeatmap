@@ -7,8 +7,7 @@
 #'   \strong{top} or \strong{bottom}. \strong{left} and \strong{right} to add
 #'   the vertical line; \strong{top} or \strong{bottom} to add the horizontal
 #'   line.
-#' @param nudge_x a value to shift the border line horizontally.
-#' @param nudge_y a value to shift the border line vertically.
+#' @param gap the gap between the border line and the heatmap
 #' @param extend_x a numeric vector with two elements. For example, \code{c(1,
 #'   2)} would extend the left end of the line by 1 and the right end by 2.
 #' @param extend_y a numeric vector with two elements. For example, \code{c(1,
@@ -16,14 +15,13 @@
 #' @inheritParams ggplot2::geom_segment
 #' @import ggplot2
 #' @importFrom dplyr left_join
-#' @export
+#' @keywords internal
 #' @return geom layer
 #' @author Ruizhu Huang
 geom_th_borderline <- function(mapping = NULL,
                            name = NULL,
                            side = "left",
-                           nudge_x = 0,
-                           nudge_y = 0,
+                           gap = 0.5,
                            extend_x = c(0, 0),
                            extend_y = c(0, 0),
                            na.rm = FALSE,
@@ -33,7 +31,13 @@ geom_th_borderline <- function(mapping = NULL,
 
     side <- match.arg(side, c("left", "right", "top", "bottom"))
 
-    position <- position_nudge(nudge_x, nudge_y)
+    if (side %in% c("left", "right")) {
+        gap_x <- ifelse(side == "left", -gap, gap)
+        position <- position_nudge(x = gap_x)
+    } else {
+        gap_y <- ifelse(side == "bottom", -gap, gap)
+        position <- position_nudge(y = gap_y)
+    }
     StatTH <- allow_subset_stat("StatTH", Stat)
     new_layer <- layer(
         mapping = mapping, data = NULL, geom = "segment",
@@ -116,32 +120,44 @@ ggplot_add.ggTHborder <- function(object, plot, object_name) {
 #'
 #' Label the border line
 #'
-#' @param name the name of the heatmap to add row or column labels.
+#' @param name the name of the heatmap
 #' @param side a character value selected from \strong{left}, \strong{right},
 #'   \strong{top} or \strong{bottom}. \strong{left} and \strong{right} to add
 #'   the vertical line; \strong{top} or \strong{bottom} to add the horizontal
 #'   line.
-#' @param nudge_x a value to shift the border line horizontally.
-#' @param nudge_y a value to shift the border line vertically.
+#' @param nudge_x a value to shift the text horizontally.
+#' @param nudge_y a value to shift the text vertically.
 #' @inheritParams ggplot2::geom_text
 #' @import ggplot2
 #' @importFrom dplyr left_join
-#' @export
+#' @keywords internal
 #' @return geom layer
 #' @author Ruizhu Huang
 geom_th_bordertext <- function(mapping = NULL,
                                name = NULL,
                                side = "left",
-                               nudge_x = 0,
-                               nudge_y = 0,
+                               gap = 0.5,
+                               extend_x = c(0, 0),
+                               extend_y = c(0, 0),
                                na.rm = FALSE,
                                show.legend = NA,
                                inherit.aes = TRUE,
+                               label_offset_x = 0,
+                               label_offset_y = 0,
                                ...) {
 
     side <- match.arg(side, c("left", "right", "top", "bottom"))
 
-    position <- position_nudge(nudge_x, nudge_y)
+    if (side %in% c("left", "right")) {
+        gap_x <- ifelse(side == "left", label_offset_x - gap,
+                        label_offset_x + gap)
+        position <- position_nudge(x = gap_x)
+    } else {
+        gap_y <- ifelse(side == "bottom", label_offset_y - gap,
+                        label_offset_y - gap)
+        position <- position_nudge(y = gap_y)
+    }
+
     StatTH <- allow_subset_stat("StatTH", Stat)
     new_layer <- layer(
         mapping = mapping, data = NULL, geom = "text",
@@ -151,19 +167,12 @@ geom_th_bordertext <- function(mapping = NULL,
         params = list(na.rm = na.rm, subset = subset, ...)
     )
 
-    th_params <- list(name = name, side = side)
+    th_params <- list(name = name, side = side,
+                      extend_x = extend_x,
+                      extend_y = extend_y)
 
     ggproto("ggTHbordertext", new_layer, th_params = th_params)
-    # .annotate_layer(mapping = mapping, th_data = NULL,
-    #                 data = NULL, name = name,
-    #                 subset = NULL, side = side,
-    #                 nudge_x = nudge_x, nudge_y = nudge_y,
-    #                 extend_x = extend_x, extend_y = extend_y,
-    #                 na.rm = na.rm, show.legend = show.legend,
-    #                 inherit.aes = inherit.aes,
-    #                 geom = "text", stat = StatTH,
-    #                 new_class = "ggTHbordertext",
-    #                 ...)
+
 
 }
 
@@ -224,7 +233,7 @@ ggplot_add.ggTHbordertext <- function(object, plot, object_name) {
     NextMethod()
 }
 
-#' add the border line of a heatmap
+#' add the border line
 #'
 #' add a line to separate heatmaps
 #'
@@ -251,28 +260,30 @@ ggplot_add.ggTHbordertext <- function(object, plot, object_name) {
 #' @return geom layer
 #' @author Ruizhu Huang
 geom_th_border <- function(name, side,
-                           nudge_x = 0, nudge_y = 0,
+                           gap = 0.5,
                            extend_y = c(0, 0),
                            extend_x = c(0, 0),
-                           label = NULL,
                            label_color = "black",
                            label_size = 4,
                            label_offset_x = 0,
-                           label_offset_y =0,
+                           label_offset_y = 0,
+                           label = "",
                            ...){
+
     list(
         geom_th_borderline(name = name, side = side,
-                           nudge_x = nudge_x,
-                           nudge_y = nudge_y,
+                           gap = gap,
                            extend_x = extend_x,
                            extend_y = extend_y,
                            ...),
-        geom_th_bordertext(name = name, side = side, color = label_color,
-                           nudge_x = nudge_x + label_offset_x,
-                           nudge_y = nudge_y + label_offset_y,
+        geom_th_bordertext(name = name, side = side,
+                           color = label_color,
+                           gap = gap,
                            extend_x = extend_x,
                            extend_y = extend_y,
                            label = label,
-                           size = label_size)
+                           size = label_size,
+                           label_offset_x = label_offset_x,
+                           label_offset_y = label_offset_y)
     )
 }
