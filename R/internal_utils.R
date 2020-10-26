@@ -29,6 +29,9 @@
     plot$heatmap[[current]]$row_tmp$df_axis
 }
 
+.col_axis <- function(plot, current){
+    plot$heatmap[[current]]$col_tmp$df_axis
+}
 
 .col_axis <- function(plot, current){
     plot$heatmap[[current]]$col_tmp$df_axis
