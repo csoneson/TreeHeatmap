@@ -10,6 +10,8 @@
 #'   decided by the \code{axisY} and the tick labels are given in \code{label}.
 #'   Similarly, to draw a horizontal axis, it requires columns \code{axisX},
 #'   \code{axis_minY}, \code{axis_maxY}, and \code{label}.
+#' @param axis_location NULL. If \code{axis_direction = "h"}, it should be "top"
+#'   or "bottom"; otherwise, it should be "left" or "right".
 #' @param axis_ticks_length a number to decide the lenght of ticks.
 #' @param axis_color the color of the axis
 #' @param axis_label_color the color of axis labels
@@ -74,6 +76,7 @@ geom_th_axis <- function(name = NULL,
         v_just <- 0.5
     }
 
+    x <- y <- xend <- yend <- brk_x <- brk_y <- label <- NULL
     list(
         geom_THaxis(name = name,
                     th_data = th_data, geom = GeomSegment,
@@ -110,6 +113,9 @@ geom_th_axis <- function(name = NULL,
 #' ggTHaxis
 #'
 #' @param name a name to select heatmap
+#' @param mapping Set of aesthetic mappings created by
+#'   \code{\link[ggplot2]{aes}}, which depends on \code{geom}.
+#' @param geom  \code{GeomSegment} or \code{GeomText}.
 #' @param th_data a data frame. It should include one column named as
 #'   \code{rowLab} to store the row name of the heatmap when \code{side} is
 #'   \strong{left} or \strong{right}; otherwise, it should include one column
@@ -120,40 +126,44 @@ geom_th_axis <- function(name = NULL,
 #' @param axis_location "right" or "left" when \code{axis_direction = "v"};
 #'   "top" or "bottom" when \code{axis_direction = "h"}
 #' @param draw "border", "axis" or "axislabel"
-#' @param border_color the color of the rectangular border
-#' @param border_size the size of the border line
+#' @param nudge_x,nudge_y Horizontal and vertical adjustment to nudge labels or
+#'   lines. Cannot be jointly specified with \code{position}.
+#' @param na.rm If FALSE, the default, missing values are removed with a
+#'   warning. If TRUE, missing values are silently removed.
+#' @param ... Other arguments passed on to \code{\link[ggplot2]{geom_text}} or
+#'   \code{\link[ggplot2]{geom_segment}} for \code{geom = GeomSegment} or
+#'   \code{geom = GeomText}.
 #' @import ggplot2
 #' @return ggTHaxis (a geom layer)
 #' @author Ruizhu Huang
 geom_THaxis <- function(mapping = NULL,
                         th_data = NULL,
+                        geom = Geom,
                         axis_ticks_length = NULL,
                         axis_location = NULL,
                         axis_direction = "h",
                         draw = NULL,
-                        geom = Geom,
-                        position = "identity",
                         ...,
                         na.rm = FALSE,
-                        show.legend = NA,
-                        inherit.aes = FALSE,
                         nudge_x = 0,
                         nudge_y = 0,
                         name = NULL) {
 
 
     if (!missing(nudge_x) || !missing(nudge_y)) {
-        if (!missing(position)) {
-            abort("You must specify either `position` or `nudge_x`/`nudge_y`.")
-        }
+        # if (!missing(position)) {
+        #     abort("You must specify either `position` or `nudge_x`/`nudge_y`.")
+        # }
         position <- position_nudge(nudge_x, nudge_y)
+    } else {
+        position <- "identity"
     }
 
     new_layer <- layer(
         stat = "identity", data = NULL, mapping = mapping,
         position = position, geom = geom,
-        show.legend = show.legend, inherit.aes = inherit.aes,
-        params = list(na.rm = na.rm, ...)
+        show.legend = NA, inherit.aes = FALSE,
+        params = list(...)
     )
 
 

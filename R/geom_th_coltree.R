@@ -10,16 +10,14 @@
 #' @export
 #' @return geom layer
 #' @author Ruizhu Huang
-geom_th_coltree <- function(mapping = NULL,
-                            data = NULL,
+geom_th_coltree <- function(name = NULL,
                             gap = 0.5,
-                            name = NULL,
                             rel_height = 0.1,
                             ...) {
 
     position <- position_nudge(y = gap)
     new_layer <- layer(
-        stat = "identity", data = data, mapping = mapping, geom = "segment",
+        stat = "identity", data = NULL, mapping = NULL, geom = "segment",
         position = position, show.legend = FALSE, inherit.aes = FALSE,
         params = list(...)
     )

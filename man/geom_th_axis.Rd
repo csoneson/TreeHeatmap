@@ -46,6 +46,9 @@ Similarly, to draw a horizontal axis, it requires columns \code{axisX},
 
 \item{axis_direction}{either "h" for horizontal or "v" for vertical}
 
+\item{axis_location}{NULL. If \code{axis_direction = "h"}, it should be "top"
+or "bottom"; otherwise, it should be "left" or "right".}
+
 \item{border_color}{the color of the rectangular border}
 
 \item{border_size}{the size of the border line}

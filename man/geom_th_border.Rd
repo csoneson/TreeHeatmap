@@ -26,6 +26,8 @@ geom_th_border(
 the vertical line; \strong{top} or \strong{bottom} to add the horizontal
 line.}
 
+\item{gap}{the gap between the border line and the heatmap}
+
 \item{extend_y}{a numeric vector with two elements. For example, \code{c(1,
 2)} would extend the bottom end of the line by 1 and the top end by 2.}
 
@@ -46,10 +48,6 @@ line.}
 often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
-
-\item{nudge_x}{a value to shift the border line horizontally.}
-
-\item{nudge_y}{a value to shift the border line vertically.}
 }
 \value{
 geom layer

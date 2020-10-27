@@ -68,11 +68,12 @@ compared to the selected heatmap}
 
 \item{axis_label_nudge_y}{adjust the location of labels along y-axis}
 
+\item{axis_location}{NULL. If \code{side} is "top" or "bottom", it should be
+"left" or "right"; otherwise, it should be "top" or "bottom".}
+
 \item{border_color}{the color of the rectangular border}
 
 \item{border_size}{the size of the border line}
-
-\item{axis_direction}{either "h" for horizontal or "v" for vertical}
 }
 \value{
 a list of geom layers

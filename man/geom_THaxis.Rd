@@ -7,27 +7,29 @@
 geom_THaxis(
   mapping = NULL,
   th_data = NULL,
+  geom = Geom,
   axis_ticks_length = NULL,
   axis_location = NULL,
   axis_direction = "h",
   draw = NULL,
-  geom = Geom,
-  position = "identity",
   ...,
   na.rm = FALSE,
-  show.legend = NA,
-  inherit.aes = FALSE,
   nudge_x = 0,
   nudge_y = 0,
   name = NULL
 )
 }
 \arguments{
+\item{mapping}{Set of aesthetic mappings created by
+\code{\link[ggplot2]{aes}}, which depends on \code{geom}.}
+
 \item{th_data}{a data frame. It should include one column named as
 \code{rowLab} to store the row name of the heatmap when \code{side} is
 \strong{left} or \strong{right}; otherwise, it should include one column
 named as \code{colLab} to store the column name of the heatmap when
 \code{side} is \strong{top} or \strong{bottom}.}
+
+\item{geom}{\code{GeomSegment} or \code{GeomText}.}
 
 \item{axis_ticks_length}{a number to decide the lenght of ticks.}
 
@@ -38,11 +40,17 @@ named as \code{colLab} to store the column name of the heatmap when
 
 \item{draw}{"border", "axis" or "axislabel"}
 
+\item{...}{Other arguments passed on to \code{\link[ggplot2]{geom_text}} or
+\code{\link[ggplot2]{geom_segment}} for \code{geom = GeomSegment} or
+\code{geom = GeomText}.}
+
+\item{na.rm}{If FALSE, the default, missing values are removed with a
+warning. If TRUE, missing values are silently removed.}
+
+\item{nudge_x, nudge_y}{Horizontal and vertical adjustment to nudge labels or
+lines. Cannot be jointly specified with \code{position}.}
+
 \item{name}{a name to select heatmap}
-
-\item{border_color}{the color of the rectangular border}
-
-\item{border_size}{the size of the border line}
 }
 \value{
 ggTHaxis (a geom layer)

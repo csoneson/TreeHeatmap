@@ -242,8 +242,7 @@ ggplot_add.ggTHbordertext <- function(object, plot, object_name) {
 #'   \strong{top} or \strong{bottom}. \strong{left} and \strong{right} to add
 #'   the vertical line; \strong{top} or \strong{bottom} to add the horizontal
 #'   line.
-#' @param nudge_x a value to shift the border line horizontally.
-#' @param nudge_y a value to shift the border line vertically.
+#' @param gap the gap between the border line and the heatmap
 #' @param extend_x a numeric vector with two elements. For example, \code{c(1,
 #'   2)} would extend the left end of the line by 1 and the right end by 2.
 #' @param extend_y a numeric vector with two elements. For example, \code{c(1,

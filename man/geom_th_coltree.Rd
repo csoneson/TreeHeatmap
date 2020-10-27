@@ -4,40 +4,13 @@
 \alias{geom_th_coltree}
 \title{add the column tree}
 \usage{
-geom_th_coltree(
-  mapping = NULL,
-  data = NULL,
-  gap = 0.5,
-  name = NULL,
-  rel_height = 0.1,
-  ...
-)
+geom_th_coltree(name = NULL, gap = 0.5, rel_height = 0.1, ...)
 }
 \arguments{
-\item{mapping}{Set of aesthetic mappings created by \code{\link[ggplot2:aes]{aes()}} or
-\code{\link[ggplot2:aes_]{aes_()}}. If specified and \code{inherit.aes = TRUE} (the
-default), it is combined with the default mapping at the top level of the
-plot. You must supply \code{mapping} if there is no plot mapping.}
-
-\item{data}{The data to be displayed in this layer. There are three
-options:
-
-If \code{NULL}, the default, the data is inherited from the plot
-data as specified in the call to \code{\link[ggplot2:ggplot]{ggplot()}}.
-
-A \code{data.frame}, or other object, will override the plot
-data. All objects will be fortified to produce a data frame. See
-\code{\link[ggplot2:fortify]{fortify()}} for which variables will be created.
-
-A \code{function} will be called with a single argument,
-the plot data. The return value must be a \code{data.frame}, and
-will be used as the layer data. A \code{function} can be created
-from a \code{formula} (e.g. \code{~ head(.x, 10)}).}
+\item{name}{the name of the heatmap}
 
 \item{gap}{a numeric value to specify the gap between the column tree and the
 heatmap}
-
-\item{name}{the name of the heatmap}
 
 \item{rel_height}{a numeric value decide the relative height of the column
 tree compared to the height of the heatmap}

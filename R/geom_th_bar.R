@@ -25,7 +25,8 @@
 #' @param axis_label_size the size of axis labels
 #' @param axis_label_nudge_x adjust the location of labels along x-axis
 #' @param axis_label_nudge_y adjust the location of labels along y-axis
-#' @param axis_direction either "h" for horizontal or "v" for vertical
+#' @param axis_location NULL. If \code{side} is "top" or "bottom", it should be
+#'   "left" or "right"; otherwise, it should be "top" or "bottom".
 #' @param border_color the color of the rectangular border
 #' @param border_size the size of the border line
 #' @param ... More arguments accepted by \code{\link[ggplot2]{geom_bar}}.
