@@ -36,13 +36,10 @@ StatTHtile <- ggproto("StatTHtile", Stat,
 #' @export
 #' @return geom layer
 #' @author Ruizhu Huang
-geom_th_heatmap <- function(mapping = NULL,
-                           th_data = NULL,
+geom_th_heatmap0 <- function(th_data = NULL,
                            cluster_column = FALSE,
                            hclust_method = "complete",
                            dist_method = "euclidean",
-                           data = NULL,
-                           position = "identity",
                            gap = 1,
                            name = NULL,
                            rel_width = 1,
@@ -52,8 +49,8 @@ geom_th_heatmap <- function(mapping = NULL,
                            show.legend = NA,
                            inherit.aes = TRUE) {
     new_layer <- layer(
-        stat = StatTHtile, data = data, mapping = mapping, geom = "tile",
-        position = position, show.legend = show.legend, inherit.aes = inherit.aes,
+        stat = StatTHtile, data = NULL, mapping = NULL, geom = "tile",
+        position = "identity", show.legend = show.legend, inherit.aes = inherit.aes,
         params = list(na.rm = na.rm, gap = gap, name = name,
                       th_data = th_data, rel_width = rel_width,
                       cluster_column = cluster_column,
@@ -176,3 +173,68 @@ ggplot_add.ggTHtile <- function(object, plot, object_name) {
     NextMethod()
 }
 
+
+#' Create heatmaps
+#' @param name the name of the current heatmap
+#' @param th_data a matrix
+#' @param cluster_column a logical value, TRUE or FALSE. If TRUE, columns of the
+#'   heatmap are rearranged according to their similarities.
+#' @param hclust_method the method used to do clustering. This should be
+#'   "ward.D", "ward.D2", "single", "complete", "average", "mcquitty", "median"
+#'   or "centroid". See \code{method} for \code{\link[stats]{hclust}}.
+#' @param dist_method the method used to do clustering. This must be one of
+#'   "euclidean", "maximum", "manhattan", "canberra", "binary" or "minkowski".
+#'   See \code{method} for \code{\link[stats]{dist}}.
+#' @param gap a numeric value to specify the gap between the current and the
+#'   previous heatmap
+#' @param rel_width a numeric value decide the relative width of the heatmap
+#'   compared to the ggtree plot
+#' @param show_coltree TRUE or FALSE. If TRUE, the column tree is shown when
+#'   \code{cluster_column = TRUE}
+#' @param gap_coltree a numeric value to decide the gap between the heatmap and
+#'   the column tree
+#' @param rel_height_coltree the relative height of the column tree compared to
+#'   the height of row tree.
+#' @param color_coltree the color of the column tree.
+#' @param size_coltree the line size of the column tree
+#' @param ... Other arguments passed on to \code{\link[ggplot2]{geom_tile}} to
+#'   customize the heatmap.
+#' @import ggplot2
+#' @export
+#' @return geom layer
+#' @author Ruizhu Huang
+geom_th_heatmap <- function(name = NULL,
+                            th_data = NULL,
+                            cluster_column = FALSE,
+                            hclust_method = "complete",
+                            dist_method = "euclidean",
+                            gap = 1,
+                            rel_width = 1,
+                            show_coltree = TRUE,
+                            gap_coltree = 0.5,
+                            rel_height_coltree = 0.1,
+                            color_coltree = "grey",
+                            size_coltree = 1,
+                            ...) {
+
+    out <- list(
+        geom_th_heatmap0(name = name,
+                         th_data = th_data,
+                         cluster_column = cluster_column,
+                         hclust_method = hclust_method,
+                         dist_method = dist_method,
+                         gap = gap,
+                         rel_width = rel_width,
+                         ...)
+    )
+
+    if (cluster_column & show_coltree) {
+        out <- c(out,
+                 list(geom_th_coltree(name = name,
+                                      gap = gap_coltree,
+                                      rel_height = rel_height_coltree,
+                                      color = color_coltree,
+                                      size = size_coltree)))
+    }
+    out
+}
