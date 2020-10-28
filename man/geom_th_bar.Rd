@@ -10,6 +10,7 @@ geom_th_bar(
   mapping = NULL,
   side = c("top", "bottom", "right", "left"),
   gap = 1,
+  width = 0.3,
   rel_width = 1,
   rel_height = 1,
   n = 2,
@@ -45,6 +46,8 @@ from \strong{left}, \strong{right} to annotate rows of the heatmap, or
 
 \item{gap}{a numeric value to specify the gap between the selected heatmap
 and the barplot}
+
+\item{width}{Bar width. By default, set to 90% of the resolution of the data.}
 
 \item{rel_width}{a numeric value decide the relative width of the barplot
 compared to the selected heatmap}

@@ -15,6 +15,8 @@ geom_th_heatmap(
   show_coltree = TRUE,
   gap_coltree = 0.5,
   rel_height_coltree = 0.1,
+  color_coltree = "grey",
+  size_coltree = 1,
   ...
 )
 }
@@ -48,6 +50,10 @@ the column tree}
 
 \item{rel_height_coltree}{the relative height of the column tree compared to
 the height of row tree.}
+
+\item{color_coltree}{the color of the column tree.}
+
+\item{size_coltree}{the line size of the column tree}
 
 \item{...}{Other arguments passed on to \code{\link[ggplot2]{geom_tile}} to
 customize the heatmap.}

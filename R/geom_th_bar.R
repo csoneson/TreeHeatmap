@@ -14,6 +14,7 @@
 #'   \strong{top}, \strong{bottom} to annotate columns of the heatmap.
 #' @param gap a numeric value to specify the gap between the selected heatmap
 #'   and the barplot
+#' @param width Bar width. By default, set to 90% of the resolution of the data.
 #' @param rel_width a numeric value decide the relative width of the barplot
 #'   compared to the selected heatmap
 #' @param rel_height a numeric value decide the relative height of the barplot
@@ -41,6 +42,7 @@ geom_th_bar <- function(name = NULL,
                         mapping = NULL,
                         side = c("top", "bottom", "right", "left"),
                         gap = 1,
+                        width = 0.3,
                         rel_width = 1,
                         rel_height = 1,
                         n = 2,
@@ -78,6 +80,7 @@ geom_th_bar <- function(name = NULL,
                         mapping = mapping,
                         side = side,
                         gap = gap,
+                        width = width,
                         rel_width =  rel_width,
                         rel_height = rel_height,
                         n = n, ...)),
@@ -225,8 +228,8 @@ ggplot_add.ggTHbar <- function(object, plot, object_name) {
 
         df <- data.frame(
             label = pretty(c(0, od$old), n = n) ,
-            axis_minY = min(od$y, na.rm = TRUE)- 0.5*unique(od$h),
-            axis_maxY = max(od$y, na.rm = TRUE)+ 0.5*unique(od$h)) %>%
+            axis_minY = min(od$y - 0.5*od$h, na.rm = TRUE),
+            axis_maxY = max(od$y + 0.5*od$h, na.rm = TRUE)) %>%
             mutate(axisX = .data$label * ww/wh* rel_width +
                        object$position$x)
         plot$heatmap[[current]]$row_tmp$df_axis <- df
@@ -265,11 +268,12 @@ ggplot_add.ggTHbar <- function(object, plot, object_name) {
         # store data to add axis
         od <- object$data
         ht <- unique(od$height)
-        df <- data.frame(label = pretty(c(0, od$old), n = n) ,
-                         axis_minX = min(od$x, na.rm = TRUE)- 0.5*unique(od$w),
-                         axis_maxX = max(od$x, na.rm = TRUE)+ 0.5*unique(od$w)) %>%
-            mutate(axisY = .data$label * hh/ht* rel_height +
-                       object$position$y)
+        df <- data.frame(
+          label = pretty(c(0, od$old), n = n) ,
+          axis_minX = min(od$x - 0.5*od$w, na.rm = TRUE),
+          axis_maxX = max(od$x + 0.5*od$w, na.rm = TRUE)) %>%
+          mutate(axisY = .data$label * hh/ht* rel_height +
+                   object$position$y)
         plot$heatmap[[current]]$col_tmp$df_axis <- df
 
     }
