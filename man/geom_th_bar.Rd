@@ -2,6 +2,7 @@
 % Please edit documentation in R/geom_th_bar.R
 \name{geom_th_bar}
 \alias{geom_th_bar}
+\alias{geom_th_bar0}
 \title{Annotation barplot}
 \usage{
 geom_th_bar(
@@ -25,6 +26,18 @@ geom_th_bar(
   border_color = "grey",
   border_size = 0.5
 )
+
+geom_th_bar0(
+  name = NULL,
+  th_data = NULL,
+  mapping = NULL,
+  side = "right",
+  gap = 1,
+  rel_width = 1,
+  rel_height = 1,
+  n = 2,
+  ...
+)
 }
 \arguments{
 \item{name}{a name to select heatmap}
@@ -35,19 +48,17 @@ geom_th_bar(
 named as \code{colLab} to store the column name of the heatmap when
 \code{side} is \strong{top} or \strong{bottom}.}
 
-\item{mapping}{Set of aesthetic mappings created by \code{\link[ggplot2:aes]{aes()}} or
-\code{\link[ggplot2:aes_]{aes_()}}. If specified and \code{inherit.aes = TRUE} (the
-default), it is combined with the default mapping at the top level of the
-plot. You must supply \code{mapping} if there is no plot mapping.}
+\item{mapping}{Set of aesthetic mappings created by
+\code{\link[ggplot2]{aes}}.}
 
 \item{side}{a character to specify where to put the barplot. It is selected
 from \strong{left}, \strong{right} to annotate rows of the heatmap, or
 \strong{top}, \strong{bottom} to annotate columns of the heatmap.}
 
 \item{gap}{a numeric value to specify the gap between the selected heatmap
-and the barplot}
+and the bar plot.}
 
-\item{width}{Bar width. By default, set to 90% of the resolution of the data.}
+\item{width}{Bar width. By default, set to 90\% of the resolution of the data.}
 
 \item{rel_width}{a numeric value decide the relative width of the barplot
 compared to the selected heatmap}
@@ -55,11 +66,12 @@ compared to the selected heatmap}
 \item{rel_height}{a numeric value decide the relative height of the barplot
 compared to the selected heatmap}
 
-\item{n}{a number to decide the number of ticks. See \link[base]{pretty}.}
+\item{n}{a number to decide the number of ticks. See
+\code{\link[base]{pretty}}.}
 
 \item{...}{More arguments accepted by \code{\link[ggplot2]{geom_bar}}.}
 
-\item{axis_ticks_length}{a number to decide the lenght of ticks.}
+\item{axis_ticks_length}{a number to decide the length of ticks.}
 
 \item{axis_color}{the color of the axis}
 
@@ -67,9 +79,9 @@ compared to the selected heatmap}
 
 \item{axis_label_size}{the size of axis labels}
 
-\item{axis_label_nudge_x}{adjust the location of labels along x-axis}
+\item{axis_label_nudge_x}{adjust the location of labels along \code{x-axis}}
 
-\item{axis_label_nudge_y}{adjust the location of labels along y-axis}
+\item{axis_label_nudge_y}{adjust the location of labels along \code{y-axis}}
 
 \item{axis_location}{NULL. If \code{side} is "top" or "bottom", it should be
 "left" or "right"; otherwise, it should be "top" or "bottom".}

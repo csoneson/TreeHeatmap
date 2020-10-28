@@ -4,6 +4,8 @@
 #' the scale of the barplot.
 #'
 #' @param name a name to select heatmap
+#' @param mapping Set of aesthetic mappings created by
+#'   \code{\link[ggplot2]{aes}}.
 #' @param th_data a data frame. It should include one column named as
 #'   \code{rowLab} to store the row name of the heatmap when \code{side} is
 #'   \strong{left} or \strong{right}; otherwise, it should include one column
@@ -13,30 +15,33 @@
 #'   from \strong{left}, \strong{right} to annotate rows of the heatmap, or
 #'   \strong{top}, \strong{bottom} to annotate columns of the heatmap.
 #' @param gap a numeric value to specify the gap between the selected heatmap
-#'   and the barplot
-#' @param width Bar width. By default, set to 90% of the resolution of the data.
+#'   and the bar plot.
+#' @param width Bar width. By default, set to 90\% of the resolution of the data.
 #' @param rel_width a numeric value decide the relative width of the barplot
 #'   compared to the selected heatmap
 #' @param rel_height a numeric value decide the relative height of the barplot
 #'   compared to the selected heatmap
-#' @param n a number to decide the number of ticks. See \link[base]{pretty}.
-#' @param axis_ticks_length a number to decide the lenght of ticks.
+#' @param n a number to decide the number of ticks. See
+#'   \code{\link[base]{pretty}}.
+#' @param axis_ticks_length a number to decide the length of ticks.
 #' @param axis_color the color of the axis
 #' @param axis_label_color the color of axis labels
 #' @param axis_label_size the size of axis labels
-#' @param axis_label_nudge_x adjust the location of labels along x-axis
-#' @param axis_label_nudge_y adjust the location of labels along y-axis
+#' @param axis_label_nudge_x adjust the location of labels along \code{x-axis}
+#' @param axis_label_nudge_y adjust the location of labels along \code{y-axis}
 #' @param axis_location NULL. If \code{side} is "top" or "bottom", it should be
 #'   "left" or "right"; otherwise, it should be "top" or "bottom".
 #' @param border_color the color of the rectangular border
 #' @param border_size the size of the border line
 #' @param ... More arguments accepted by \code{\link[ggplot2]{geom_bar}}.
-#' @inheritParams ggplot2::layer
-#' @inheritParams ggplot2::geom_bar
 #' @import ggplot2
 #' @export
+#'
 #' @return a list of geom layers
+#'
 #' @author Ruizhu Huang
+#'
+
 geom_th_bar <- function(name = NULL,
                         th_data = NULL,
                         mapping = NULL,
@@ -75,68 +80,44 @@ geom_th_bar <- function(name = NULL,
     }
 
     c(
-      list(geom_th_bar0(name = name,
-                        th_data = th_data,
-                        mapping = mapping,
-                        side = side,
-                        gap = gap,
-                        width = width,
-                        rel_width =  rel_width,
-                        rel_height = rel_height,
-                        n = n, ...)),
-      geom_th_axis(name = name,
-                   th_data = NULL,
-                   axis_ticks_length = axis_ticks_length,
-                   axis_color = axis_color,
-                   axis_label_color = axis_label_color,
-                   axis_label_size = axis_label_size,
-                   axis_label_nudge_x = axis_label_nudge_x,
-                   axis_label_nudge_y = axis_label_nudge_y,
-                   axis_direction = axis_direction,
-                   axis_location = axis_location,
-                   border_color = border_color,
-                   border_size = border_size)
-      )
+        list(geom_th_bar0(name = name,
+                          th_data = th_data,
+                          mapping = mapping,
+                          side = side,
+                          gap = gap,
+                          width = width,
+                          rel_width =  rel_width,
+                          rel_height = rel_height,
+                          n = n, ...)),
+        geom_th_axis(name = name,
+                     th_data = NULL,
+                     axis_ticks_length = axis_ticks_length,
+                     axis_color = axis_color,
+                     axis_label_color = axis_label_color,
+                     axis_label_size = axis_label_size,
+                     axis_label_nudge_x = axis_label_nudge_x,
+                     axis_label_nudge_y = axis_label_nudge_y,
+                     axis_direction = axis_direction,
+                     axis_location = axis_location,
+                     border_color = border_color,
+                     border_size = border_size)
+    )
 
 }
 
-#' Annotation barplot
-#'
-#' This adds a barplot to annotate rows or columns of a heatmap without showing
-#' the scale of the barplot.
-#'
-#' @param name a name to select heatmap
-#' @param th_data a data frame. It should include one column named as
-#'   \code{rowLab} to store the row name of the heatmap when \code{side} is
-#'   \strong{left} or \strong{right}; otherwise, it should include one column
-#'   named as \code{colLab} to store the column name of the heatmap when
-#'   \code{side} is \strong{top} or \strong{bottom}.
-#' @param side a character to specify where to put the barplot. It is selected
-#'   from \strong{left}, \strong{right} to annotate rows of the heatmap, or
-#'   \strong{top}, \strong{bottom} to annotate columns of the heatmap.
-#' @param gap a numeric value to specify the gap between the selected heatmap
-#'   and the barplot
-#' @param rel_width a numeric value decide the relative width of the barplot
-#'   compared to the selected heatmap
-#' @param rel_height a numeric value decide the relative height of the barplot
-#'   compared to the selected heatmap
-#' @param n a number to decide the number of ticks. See \link[base]{pretty}.
-#' @inheritParams ggplot2::layer
-#' @inheritParams ggplot2::geom_bar
-#' @import ggplot2
-#' @return a geom layer
-#' @author Ruizhu Huang
+
+
+
+#' @rdname geom_th_bar
 geom_th_bar0 <- function(name = NULL,
-                        th_data = NULL,
-                        mapping = NULL,
-                        side = "right",
-                        gap = 1,
-                        rel_width = 1,
-                        rel_height = 1,
-                        stat = "identity",
-                        n = 2,
-                        ...,
-                        inherit.aes = FALSE) {
+                         th_data = NULL,
+                         mapping = NULL,
+                         side = "right",
+                         gap = 1,
+                         rel_width = 1,
+                         rel_height = 1,
+                         n = 2,
+                         ...) {
 
     if (side %in% c("left", "right")) {
         position <- position_nudge(x = gap)
@@ -150,9 +131,9 @@ geom_th_bar0 <- function(name = NULL,
         stop("Currently, only (stat = 'identity') is supported.")
     }
     new_layer <- layer(
-        stat = stat, data = NULL, mapping = mapping,
+        stat = "identity", data = NULL, mapping = mapping,
         geom = GeomBar, position = position,
-        inherit.aes = inherit.aes,
+        inherit.aes = FALSE,
         params = list(orientation = orientation, ...)
     )
 
@@ -162,7 +143,6 @@ geom_th_bar0 <- function(name = NULL,
                       n = n)
     ggproto("ggTHbar", new_layer, th_params = th_params)
 }
-
 
 #' @method ggplot_add ggTHbar
 #' @import ggplot2
@@ -259,7 +239,7 @@ ggplot_add.ggTHbar <- function(object, plot, object_name) {
             barY <- max(object$data[[ylab]], na.rm = TRUE)
             object$position$y <- minY - gap - barY
 
-            } else {
+        } else {
             # position: top
             maxY <- max(.col_anchor(plot, current)$maxY)
             object$position$y <- object$position$y + maxY
@@ -269,16 +249,14 @@ ggplot_add.ggTHbar <- function(object, plot, object_name) {
         od <- object$data
         ht <- unique(od$height)
         df <- data.frame(
-          label = pretty(c(0, od$old), n = n) ,
-          axis_minX = min(od$x - 0.5*od$w, na.rm = TRUE),
-          axis_maxX = max(od$x + 0.5*od$w, na.rm = TRUE)) %>%
-          mutate(axisY = .data$label * hh/ht* rel_height +
-                   object$position$y)
+            label = pretty(c(0, od$old), n = n) ,
+            axis_minX = min(od$x - 0.5*od$w, na.rm = TRUE),
+            axis_maxX = max(od$x + 0.5*od$w, na.rm = TRUE)) %>%
+            mutate(axisY = .data$label * hh/ht* rel_height +
+                       object$position$y)
         plot$heatmap[[current]]$col_tmp$df_axis <- df
 
     }
 
     NextMethod()
 }
-
-
