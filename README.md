@@ -1,5 +1,5 @@
 # TreeHeatmap
-This package is created to visualize heatmap at different levels of the tree. It allows the visualization of the heatmap to be zoomed in specific branches of the tree, and also provides annotation functions to decorate the heatmap. The syntax of annotation functions mainly follows the commonly used package ggplot2. Geom layers that are generated in this package have a prefix geom_th to distinguish those provided in ggplot2 or ggtree.
+This package is created to visualize heatmap at different levels of the tree. It allows the visualization of the heatmap to be zoomed in specific branches of the tree, and also provides annotation functions to decorate the heatmap. The syntax of annotation functions mainly follows the commonly used package ggplot2. `TreeHeatmap` can work seamlessly with `ggtree`. Geom layers that are generated in this package have a prefix geom_th to distinguish those provided in ggplot2 or ggtree.
 
 
 # Installation
