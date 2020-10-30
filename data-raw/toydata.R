@@ -21,9 +21,15 @@ aa <- aa[, sample(1:ncol(aa), ncol(aa), replace = FALSE)]
 #             colSums(aa[8:9, ]),
 #             aa[10, ])
 # rownames(bb) <- c("N14", paste0("N", 4:7), "N19", "N10")
-
+bb <- rbind(count[1, ],
+            colSums(count[2:3, ]),
+            count[4:6, ],
+            colSums(count[7:9, ]),
+            count[10, ])
+rownames(bb) <- paste0("N", c(1, 15, 4:6, 18, 10))
 toydata <- list(toytree = tinyTree,
-                count = aa)
+                count = aa,
+                count_agg = bb)
 
 
 usethis::use_data(toydata, overwrite = TRUE)
