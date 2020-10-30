@@ -8,6 +8,8 @@ devtools::install_github("fionarhuang/TreeHeatmap")
 ```
 
 # A short example
+
+![Alt text](https://github.com/fionarhuang/TreeHeatmap/blob/master/vignettes/exFig.png)
 ```
 library(TreeHeatmap)
 library(ggnewscale)
