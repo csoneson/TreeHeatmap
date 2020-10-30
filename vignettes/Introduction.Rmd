@@ -1,0 +1,370 @@
+---
+title: "Introduction to TreeHeatmap"
+author: 
+- name: Ruizhu HUANG
+  affiliation: 
+  - Institute of Molecular Life Sciences, University of Zurich.
+  - SIB Swiss Institute of Bioinformatics.
+package: TreeHeatmap
+output: 
+  BiocStyle::html_document
+vignette: >
+  %\VignetteIndexEntry{Introduction to TreeHeatmap}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteEngine{knitr::rmarkdown}
+editor_options: 
+  chunk_output_type: console
+---
+
+```{r setup}
+suppressPackageStartupMessages({
+  library(TreeHeatmap)
+  library(ggtree)
+  library(ggplot2)
+  library(ggnewscale)
+  library(dplyr)
+})
+```
+
+This package is created to visualize heatmap at different levels of the tree. It
+allows the visualization of the heatmap to be zoomed in specific branches of the
+tree, and also provides annotation functions to decorate the heatmap. The syntax
+of annotation functions mainly follows the commonly used package 
+`r CRANpkg("ggplot2")`. Geom layers that are generated in this package have a
+prefix `geom_th` to distinguish those provided in `r CRANpkg("ggplot2")` or `r
+Biocpkg("ggtree")`.
+
+# The toy data
+
+The toy data contains a matrix (`count`) and a tree (`toytree`). The `toytree`
+is visualized with `r Biocpkg("ggtree")`. The label and numeric id of nodes are
+labeled as red and blue texts, respectively.
+
+```{r}
+data("toydata")
+toytree <- toydata$toytree
+
+(fig_tree <- ggtree(toytree, branch.length = "none", size = 0.1) +
+  geom_text(aes(label = label), color = "red", vjust = 0.6) +
+  geom_text(aes(label = node), color = "blue", vjust = -0.6) )
+
+```
+
+The matrix `count` has 10 rows and 8 columns. Each row corresponds to a leaf of
+the tree. The row name is the same to the leaf name.
+```{r}
+(count <- toydata$count)
+```
+
+`count` is visualized in the heatmap by using `geom_th_heatmap`.
+```{r}
+fig_tree +
+  geom_th_heatmap(th_data = count, name = "hm1", gap = 0.5) 
+```
+
+We further cluster columns of the heatmap via `cluster_column = TRUE` and show
+the column tree with `show_coltree = TRUE`. The gap between the column tree and
+the heatmap is `gap_coltree = 0.1`. The line size and the color of the column
+tree are specified by `size_coltree = 0.5` and `color_coltree = "red"`,
+respectively. The height of the column tree is adjusted via
+`rel_height_coltree`.
+
+```{r}
+fig_tree +
+  geom_th_heatmap(th_data = count, name = "hm1", gap = 0.5,
+                  cluster_column = TRUE, show_coltree = TRUE, 
+                  gap_coltree = 0.1, color_coltree = "red", 
+                  size_coltree = 0.5, rel_height_coltree = 0.1) 
+```
+
+
+# Display heatmaps
+
+It is possible to align the heatmap to an arbitary level of the tree. For
+example, we could aggregate counts from `N7`, `N8` and `N9` to `N18`, and counts
+from `N2`, `N3` to `N15`.
+
+```{r}
+agg_count <- rbind(count[1, ],
+                   colSums(count[2:3, ]),
+                   count[4:6, ],
+                   colSums(count[7:9, ]),
+                   count[10, ])
+rownames(agg_count) <- paste0("N", c(1, 15, 4:6, 18, 10))
+```
+
+We visualize `agg_count` on the second heatmap. The gap between two heatmaps is
+controlled by `gap`. Names `name = "hm1"` and `name = "hm2"` are assigned to two
+heatmaps, respectively. The name is useful for later annotation.
+```{r}
+(fig_hm2 <- ggtree(toytree, branch.length = "none", size = 0.1) +
+  geom_th_heatmap(th_data = count, name = "hm1", gap = 1) +
+  geom_th_heatmap(th_data = agg_count, name = "hm2", gap = 0.2))
+```
+
+When the layout of the tree is changed, e.g., `layout = "circular"`, heatmaps
+will change accordingly.
+```{r}
+ggtree(toytree, branch.length = "none", size = 0.1,
+       layout = "circular") +
+  geom_th_heatmap(th_data = count, name = "hm1", gap = 1) +
+  geom_th_heatmap(th_data = agg_count, name = "hm2", gap = 0.2)
+```
+
+
+The fill color of heatmap can be changed using `scale_fill_*` in 
+`r CRANpkg("ggplot2")` (e.g., `scale_fill_viridis_c`).
+```{r}
+fig_hm2 +
+  scale_fill_viridis_c()
+```
+
+To use different fill colors for two heatmaps, we could use 
+`new_scale_fill` from `r CRANpkg("ggnewscale")` to separate them.
+
+```{r}
+(fig_hm3 <- ggtree(toytree, branch.length = "none", size = 0.1) +
+   geom_th_heatmap(th_data = count, name = "hm1", gap = 1) +
+   scale_fill_viridis_c(option = "A", name = "hm1") +
+   new_scale_fill() +
+   geom_th_heatmap(th_data = agg_count, name = "hm2", gap = 0.2) +
+   scale_fill_viridis_c(option = "D", name = "hm2")
+)
+```
+
+# Annotation on the row tree
+
+We are free to use functions from `r Biocpkg("ggtree")` to decorate the tree.
+
+```{r}
+(fig_hm3 <- fig_hm3 +
+  geom_hilight(node = 18, fill = "blue", alpha = 0.5) +
+  geom_hilight(node = 15, fill = "orange", alpha = 0.5) +
+  geom_tippoint(color = "red", shape = 8))
+```
+
+
+# Annotation on the heatmap
+## Display row and column names
+
+Row or column names are added to the heatmap using `geom_th_text`. When `side =
+left` or `side = right`, row names are added. When `side = top` or `side=
+bottom`, column names are added. `nudge_x` and `nudge_y` are used to adjust the
+text horizontally and vertically, respectively. We can use `name` to select the
+heatmap.  More arguments like `size`, `color` that are accepted by
+`ggplot2::geom_text` are also recognized by `geom_th_text`.
+
+```{r}
+fig_hm3 +
+  geom_th_text(name = "hm1", side = "left", nudge_x = -0.5) +
+  geom_th_text(name = "hm2", side = "right", nudge_x = 0.5,
+               color = "red") +
+  geom_th_text(name = "hm2", side = "top", nudge_y = 0.5,
+               angle = 90, size = 3)
+```
+
+A new data can be provided in the layer `geom_th_text` to customize the display
+of row names. For example, only rows in groups `B` and `C` have names displayed,
+and the text color is decided by the `group`.
+```{r}
+(df_row <- data.frame(rowLab = rownames(count),
+                     group = c("A", "B", "B", "A", "A",
+                               "A", "C", "C", "C", "A")))
+fig_hm3 +
+  geom_th_text(th_data = df_row, 
+               aes(subset = group %in% c("B", "C"), color = group),
+               name = "hm1", side = "left", nudge_x = -0.5,
+               show.legend = FALSE) +
+  scale_color_manual(values = c("B" = "orange",
+                                "C" = "blue"))
+```
+
+
+## Display row and column titles
+
+The row or column title of heatmap can be added using `geom_th_title`.
+
+```{r}
+
+fig_hm3 +
+  geom_th_title(name = "hm1", side = "top",
+                label = "The first heatmap", nudge_y = -0.5) +
+  geom_th_title(name = "hm2", side = "right",
+                label = "Columns of the second heatmap",
+                angle = -90, nudge_x = -0.5)
+  
+```
+
+
+## Display entry values
+
+`geom_th_addvalue` is used to display entry values of the heatmap. We can
+customize the text using arguments, e.g., `color`, `size`, that are accepted by
+`geom_text`.
+```{r}
+
+fig_hm3 +
+  geom_th_addvalue(name = "hm2", color = "white", size = 4) +
+  geom_th_addvalue(th_data = df_row, 
+                   aes(subset = group %in% "A"),
+                   color = "white",
+                   name = "hm1", show.legend = FALSE)
+  
+```
+
+
+## Display barplots
+
+We can add barplots to annotate rows or columns of heatmap. The provided data
+should include a column named as `colLab` to store the column name. This column
+is used internally to align barplot with columns of heatmap. The barplot is
+filled according to the `aes(x = colLab, y = obs, fill = Category)`. The barplot
+is put on the top of the heatmap `side = "top"`. The gap between the barplot and
+the heatmap is `gap = 0.2`. The relative height of the barplot is `rel_height =
+0.1` compared to the height of the row tree.
+
+```{r}
+(col_bar <- data.frame(colLab = rep(colnames(count), 2),
+                       obs = c(1:8, rep(5, 8)),
+                       Category = rep(LETTERS[1:2], each = 8)))
+
+(fig_hm4 <- fig_hm3 +
+  new_scale_fill() +
+  geom_th_bar(name = "hm2",
+              th_data = col_bar,
+              aes(x = colLab, y = obs, fill = Category),
+              side = "top",
+              gap = 0.2,
+              rel_height = 0.1))
+  
+```
+
+Similarly, we can add a barplot to annotate rows as below. The data `row_bar`
+now provides a column named as `rowLab` instead of `colLab` in `col_bar`. The
+width of the barplot is adapted via `rel_width` in `geom_th_bar`. We put the
+barplot either on `side = left` or `side = right` to annotate the heatmap.
+
+```{r}
+(row_bar <- data.frame(rowLab = rep(rownames(agg_count), 2),
+                       obs = c(1:7, rep(5, 7)),
+                       Category = rep(LETTERS[1:2], each = 7)))
+
+fig_hm4  +
+  new_scale_fill()+
+  geom_th_bar(name = "hm2",
+              th_data = row_bar,
+              aes(y = colLab, x = obs, fill = Category),
+              side = "right",
+              gap = 0.2,
+              rel_width = 0.5)
+
+```
+
+
+#  Real case
+
+```{r}
+data("Oral")
+names(Oral)
+
+# trees: phylogenetic/taxonomic tree 
+phylo_tree <- Oral$phylo_tree
+taxo_tree <- Oral$taxo_tree
+
+# Counts: count_table is already in CPM scale
+count_table <- Oral$count_table
+count_log <- log10(count_table + 1)
+
+
+Fig <- ggtree(taxo_tree, branch.length = "none") +
+  geom_th_heatmap(name = "logCPM",
+                  th_data = count_log, 
+                  cluster_column = TRUE, 
+                  size_coltree = 0.3, 
+                  color_coltree = "black", 
+                  rel_height_coltree = 0.3,
+                  gap_coltree = 3) +
+  scale_fill_viridis_c(option = "D", name = "logCPM")
+
+```
+
+
+We annotate samples with the body site.
+```{r}
+df_sample <- Oral$meta_sample %>%
+  mutate(colLab = rownames(Oral$meta_sample),  # column names
+         Bodysite = HMP_BODY_SUBSITE) %>%
+  select(colLab, Bodysite)
+
+ Fig +
+   geom_th_segment(th_data = df_sample,
+                   aes(color = Bodysite),
+                   side = "top", size = 3,
+                   nudge_y = 1.5) +
+   scale_color_manual(values = c("Saliva" = "orange", 
+                                 "Supragingival Plaque" = "blue",
+                                 "Throat" = "red"))
+   
+```
+
+
+
+```{r}
+taxo_table <- Oral$taxo_table
+
+node_a <- nodeid(tree = taxo_tree, label = "ORDER:Actinomycetales")
+no_a <- setdiff(taxo_table$ORDER, "ORDER:Actinomycetales")
+node_b <- nodeid(tree = taxo_tree, label = paste0("ORDER:", no_a))
+
+(fig_tree <- ggtree_th(taxo_tree, branch.length = "none",
+                       node = c(node_a, node_b),
+                       scale_y = c(20, rep(0.1, length(node_b)))) +
+                geom_hilight(node  = node_a, fill = "blue", 
+                             alpha =  0.5) )
+
+# fig_0 <- ggtree(taxo_tree, branch.length = "none")
+# # node_ab <- setdiff(c(node_a, node_b), 104)
+# # n_ab <- c(3, rep(0.1, length(node_b)-1))
+# 
+# node_ab <- setdiff(node_b, 104)
+# n_ab <- rep(0.1, length(node_b)-1)
+# 
+# for (i in seq_along(node_ab)) {
+#   fig_0 <- fig_0 %>% scaleClade(node = node_ab[i], scale = n_ab[i])
+# }
+# 
+# 
+# fig_0 +
+#   geom_hilight(node  = node_a, fill = "blue",
+#                              alpha =  0.5)
+# fig_0 +
+#   geom_th_heatmap(name = "logCPM",
+#                   th_data = count_log,
+#                   cluster_column = TRUE,
+#                   show_coltree = FALSE,
+#                   rel_width = 2) +
+#   scale_fill_viridis_c(option = "d", name = "logCPM") +
+#   geom_th_segment(th_data = df_sample,
+#                    aes(color = Bodysite),
+#                    side = "top", size = 3,
+#                    nudge_y = 1.5) +
+#    scale_color_manual(values = c("Saliva" = "orange",
+#                                  "Supragingival Plaque" = "blue",
+#                                  "Throat" = "red"))
+
+fig_tree +
+  geom_th_heatmap(name = "logCPM",
+                  th_data = count_log,
+                  cluster_column = TRUE,
+                  show_coltree = FALSE,
+                  rel_width = 2) +
+  scale_fill_viridis_c(option = "d", name = "logCPM") +
+  geom_th_segment(th_data = df_sample,
+                   aes(color = Bodysite),
+                   side = "top", size = 3,
+                   nudge_y = 1.5) +
+   scale_color_manual(values = c("Saliva" = "orange",
+                                 "Supragingival Plaque" = "blue",
+                                 "Throat" = "red"))
+
+```
