@@ -7,7 +7,6 @@
 geom_th_segment(
   mapping = NULL,
   th_data = NULL,
-  data = NULL,
   name = NULL,
   subset = NULL,
   side = "left",
@@ -25,23 +24,11 @@ geom_th_segment(
 default), it is combined with the default mapping at the top level of the
 plot. You must supply \code{mapping} if there is no plot mapping.}
 
-\item{th_data}{a data frame. It should include at least one column
-\code{label} that stores the row/column names of the heatmap.}
-
-\item{data}{The data to be displayed in this layer. There are three
-options:
-
-If \code{NULL}, the default, the data is inherited from the plot
-data as specified in the call to \code{\link[ggplot2:ggplot]{ggplot()}}.
-
-A \code{data.frame}, or other object, will override the plot
-data. All objects will be fortified to produce a data frame. See
-\code{\link[ggplot2:fortify]{fortify()}} for which variables will be created.
-
-A \code{function} will be called with a single argument,
-the plot data. The return value must be a \code{data.frame}, and
-will be used as the layer data. A \code{function} can be created
-from a \code{formula} (e.g. \code{~ head(.x, 10)}).}
+\item{th_data}{a data frame. It should include one column named as
+\code{rowLab} to store the row name of the heatmap when \code{side} is
+\strong{left} or \strong{right}; otherwise, it should include one column
+named as \code{colLab} to store the column name of the heatmap when
+\code{side} is \strong{top} or \strong{bottom}.}
 
 \item{name}{the name of the heatmap to add row or column labels.}
 

@@ -127,9 +127,9 @@ geom_th_bar0 <- function(name = NULL,
         orientation <- "x"
     }
 
-    if (stat != "identity") {
-        stop("Currently, only (stat = 'identity') is supported.")
-    }
+    # if (stat != "identity") {
+    #     stop("Currently, only (stat = 'identity') is supported.")
+    # }
     new_layer <- layer(
         stat = "identity", data = NULL, mapping = mapping,
         geom = GeomBar, position = position,
