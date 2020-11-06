@@ -46,6 +46,9 @@ ggtree(toytree, branch.length = "none", size = 0.1) +
 
 ```
 
+# A second example 
 
+The code `TreeHeatmap` to generate the figure below is available ([here](https://github.com/fionarhuang/TreeHeatmap/blob/master/data-raw/Viz_stool.R))
 
+![Alt text](https://github.com/fionarhuang/TreeHeatmap/blob/master/vignettes/stool.png)
 
