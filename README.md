@@ -7,7 +7,14 @@ This package is created to visualize heatmap at different levels of the tree. It
 devtools::install_github("fionarhuang/TreeHeatmap")
 ```
 
-# A short example
+# Viz stool data 
+
+The code `TreeHeatmap` to generate the figure below is available ([here](https://github.com/fionarhuang/TreeHeatmap/blob/master/data-raw/Viz_stool.R))
+
+![Alt text](https://github.com/fionarhuang/TreeHeatmap/blob/master/vignettes/stool.png)
+
+
+# Start with a toy example
 
 ![Alt text](https://github.com/fionarhuang/TreeHeatmap/blob/master/vignettes/exFig.png)
 ```
@@ -46,9 +53,5 @@ ggtree(toytree, branch.length = "none", size = 0.1) +
 
 ```
 
-# A second example 
 
-The code `TreeHeatmap` to generate the figure below is available ([here](https://github.com/fionarhuang/TreeHeatmap/blob/master/data-raw/Viz_stool.R))
-
-![Alt text](https://github.com/fionarhuang/TreeHeatmap/blob/master/vignettes/stool.png)
 
