@@ -9,7 +9,7 @@ devtools::install_github("fionarhuang/TreeHeatmap")
 
 # Viz stool data 
 
-Please find the code ([here](https://github.com/fionarhuang/TreeHeatmap/blob/master/data-raw/Viz_stool.R)) to generate the figure using `TreeHeatmap`. Or start with a toy example to learn about `TreeHeatmap`.   
+Please find the code ([here](https://github.com/fionarhuang/TreeHeatmap/blob/master/data-raw/Viz_stool.R)) to generate the figure using `TreeHeatmap`. Or start with a toy example below to learn about `TreeHeatmap`.   
 
 ![Alt text](https://github.com/fionarhuang/TreeHeatmap/blob/master/vignettes/stool.png)
 
