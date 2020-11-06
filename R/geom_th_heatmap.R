@@ -47,7 +47,7 @@ geom_th_heatmap0 <- function(th_data = NULL,
                            linejoin = "mitre",
                            na.rm = FALSE,
                            show.legend = NA,
-                           inherit.aes = TRUE) {
+                           inherit.aes = FALSE) {
     new_layer <- layer(
         stat = StatTHtile, data = NULL, mapping = NULL, geom = "tile",
         position = "identity", show.legend = show.legend, inherit.aes = inherit.aes,

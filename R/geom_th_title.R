@@ -23,7 +23,7 @@ geom_th_title <- function(mapping = NULL,
                            nudge_y = 0,
                            na.rm = FALSE,
                            show.legend = NA,
-                           inherit.aes = TRUE,
+                           inherit.aes = FALSE,
                            ...) {
 
     side <- match.arg(side, c("left", "right", "top", "bottom"))

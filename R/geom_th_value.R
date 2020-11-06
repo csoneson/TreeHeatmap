@@ -20,7 +20,7 @@ geom_th_addvalue <- function(mapping = NULL,
                              nudge_y = 0,
                              na.rm = FALSE,
                              show.legend = NA,
-                             inherit.aes = TRUE,
+                             inherit.aes = FALSE,
                              ...) {
 
     position <- position_nudge(nudge_x, nudge_y)
