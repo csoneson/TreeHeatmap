@@ -6,16 +6,13 @@
 \usage{
 geom_th_border(
   name,
-  side,
+  side = "right",
   gap = 0.5,
   extend_y = c(0, 0),
   extend_x = c(0, 0),
-  label_color = "black",
-  label_size = 4,
-  label_offset_x = 0,
-  label_offset_y = 0,
-  label = "",
-  ...
+  th_geom = "text",
+  ...,
+  params_label = list(color = "black", size = 4, nudge_x = 0, nudge_y = 0, label = "")
 )
 }
 \arguments{
@@ -34,29 +31,22 @@ line.}
 \item{extend_x}{a numeric vector with two elements. For example, \code{c(1,
 2)} would extend the left end of the line by 1 and the right end by 2.}
 
-\item{label_color}{the color of the label.}
-
-\item{label_size}{the font size of the label.}
-
-\item{label_offset_x}{a value to shift the label horizontally.}
-
-\item{label_offset_y}{a value to shift the label vertically.}
-
-\item{label}{a character to label the border line}
+\item{th_geom}{"label" (for \code{geom_label}) or "text" (for \code{geom_text})}
 
 \item{...}{Other arguments passed on to \code{\link[ggplot2:layer]{layer()}}. These are
 often aesthetics, used to set an aesthetic to a fixed value, like
 \code{colour = "red"} or \code{size = 3}. They may also be parameters
 to the paired geom/stat.}
+
+\item{params_label}{a list of arguments to passed to  \code{geom_text} (or
+\code{geom_label}) to customize the label. See
+\code{\link[ggplot2]{geom_label}}.}
 }
 \value{
-geom layer
+geom layers
 }
 \description{
 add a line to separate heatmaps
-}
-\seealso{
-\code{\link{geom_th_borderline}} \code{\link{geom_th_bordertext}}
 }
 \author{
 Ruizhu Huang

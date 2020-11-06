@@ -16,7 +16,7 @@ geom_th_heatmap0(
   linejoin = "mitre",
   na.rm = FALSE,
   show.legend = NA,
-  inherit.aes = TRUE
+  inherit.aes = FALSE
 )
 }
 \arguments{

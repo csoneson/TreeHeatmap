@@ -12,7 +12,7 @@ geom_th_title(
   nudge_y = 0,
   na.rm = FALSE,
   show.legend = NA,
-  inherit.aes = TRUE,
+  inherit.aes = FALSE,
   ...
 )
 }
