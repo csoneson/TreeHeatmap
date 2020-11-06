@@ -14,7 +14,7 @@ geom_th_text(
   nudge_y = 0,
   na.rm = FALSE,
   show.legend = NA,
-  inherit.aes = TRUE,
+  inherit.aes = FALSE,
   ...
 )
 }
