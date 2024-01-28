@@ -316,11 +316,11 @@ node_a <- nodeid(tree = taxo_tree, label = "ORDER:Actinomycetales")
 no_a <- setdiff(taxo_table$ORDER, "ORDER:Actinomycetales")
 node_b <- nodeid(tree = taxo_tree, label = paste0("ORDER:", no_a))
 
-(fig_tree <- ggtree_th(taxo_tree, branch.length = "none",
-                       node = c(node_a, node_b),
-                       scale_y = c(20, rep(0.1, length(node_b)))) +
-                geom_hilight(node  = node_a, fill = "blue", 
-                             alpha =  0.5) )
+# (fig_tree <- ggtree_th(taxo_tree, branch.length = "none",
+#                        node = c(node_a, node_b),
+#                        scale_y = c(20, rep(0.1, length(node_b)))) +
+#                 geom_hilight(node  = node_a, fill = "blue", 
+#                              alpha =  0.5) )
 
 # fig_0 <- ggtree(taxo_tree, branch.length = "none")
 # # node_ab <- setdiff(c(node_a, node_b), 104)
@@ -352,19 +352,19 @@ node_b <- nodeid(tree = taxo_tree, label = paste0("ORDER:", no_a))
 #                                  "Supragingival Plaque" = "blue",
 #                                  "Throat" = "red"))
 
-fig_tree +
-  geom_th_heatmap(name = "logCPM",
-                  th_data = count_log,
-                  cluster_column = TRUE,
-                  show_coltree = FALSE,
-                  rel_width = 2) +
-  scale_fill_viridis_c(option = "d", name = "logCPM") +
-  geom_th_segment(th_data = df_sample,
-                   aes(color = Bodysite),
-                   side = "top", size = 3,
-                   nudge_y = 1.5) +
-   scale_color_manual(values = c("Saliva" = "orange",
-                                 "Supragingival Plaque" = "blue",
-                                 "Throat" = "red"))
+# fig_tree +
+#   geom_th_heatmap(name = "logCPM",
+#                   th_data = count_log,
+#                   cluster_column = TRUE,
+#                   show_coltree = FALSE,
+#                   rel_width = 2) +
+#   scale_fill_viridis_c(option = "d", name = "logCPM") +
+#   geom_th_segment(th_data = df_sample,
+#                    aes(color = Bodysite),
+#                    side = "top", size = 3,
+#                    nudge_y = 1.5) +
+#    scale_color_manual(values = c("Saliva" = "orange",
+#                                  "Supragingival Plaque" = "blue",
+#                                  "Throat" = "red"))
 
 ```

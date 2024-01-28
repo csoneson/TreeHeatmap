@@ -19,10 +19,10 @@
 #' set.seed(1)
 #' rt <- ape::rtree(200)
 #'
-#' ggtree_th(rt, branch.length = "none", node = c(280, 320),
-#'                   scale_y = 8, scale_x = c(2, 1.75)) +
-#'     geom_hilight(node = 280, fill = "red", alpha = 0.5) +
-#'     geom_hilight(node = 320, fill = "blue", alpha = 0.5)
+#' #ggtree_th(rt, branch.length = "none", node = c(280, 320),
+#' #                  scale_y = 8, scale_x = c(2, 1.75)) +
+#' #    geom_hilight(node = 280, fill = "red", alpha = 0.5) +
+#' #    geom_hilight(node = 320, fill = "blue", alpha = 0.5)
 
 ggtree_th <- function(tr,
                       mapping = NULL,
