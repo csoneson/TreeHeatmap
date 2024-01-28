@@ -59,7 +59,12 @@ length equal to 1 or the same length as \code{node}.}
 \item{scale_y}{A numeric vector to scale clades vertically. It should have
 length equal to 1 or the same length as \code{node}.}
 
-\item{...}{additional parameter}
+\item{...}{additional parameter
+
+some dot arguments:
+\itemize{
+\item \code{nsplit} integer, the number of branch blocks divided when 'continuous' is not "none", default is 200.
+}}
 }
 \value{
 ggtree
@@ -72,10 +77,10 @@ library(ggtree)
 set.seed(1)
 rt <- ape::rtree(200)
 
-ggtree_th(rt, branch.length = "none", node = c(280, 320),
-                  scale_y = 8, scale_x = c(2, 1.75)) +
-    geom_hilight(node = 280, fill = "red", alpha = 0.5) +
-    geom_hilight(node = 320, fill = "blue", alpha = 0.5)
+#ggtree_th(rt, branch.length = "none", node = c(280, 320),
+#                  scale_y = 8, scale_x = c(2, 1.75)) +
+#    geom_hilight(node = 280, fill = "red", alpha = 0.5) +
+#    geom_hilight(node = 320, fill = "blue", alpha = 0.5)
 }
 \author{
 Ruizhu Huang

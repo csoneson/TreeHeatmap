@@ -27,11 +27,11 @@ library(ggtree)
 set.seed(1)
 rt <- ape::rtree(200)
 
-ggtree(rt, branch.length = "none") +
-    geom_th_zoomclade(node = c(280, 320), scale_y = 8,
-    scale_x = c(2, 1.75)) +
-    geom_hilight(node = 280, fill = "red", alpha = 0.5) +
-    geom_hilight(node = 320, fill = "blue", alpha = 0.5)
+#ggtree(rt, branch.length = "none") +
+#    geom_th_zoomclade(node = c(280, 320), scale_y = 8,
+#    scale_x = c(2, 1.75)) +
+#    geom_hilight(node = 280, fill = "red", alpha = 0.5) +
+#    geom_hilight(node = 320, fill = "blue", alpha = 0.5)
 }
 \author{
 Ruizhu Huang
