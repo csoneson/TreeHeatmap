@@ -368,3 +368,10 @@ node_b <- nodeid(tree = taxo_tree, label = paste0("ORDER:", no_a))
 #                                  "Throat" = "red"))
 
 ```
+
+# Session info
+
+```{r}
+sessionInfo()
+```
+
